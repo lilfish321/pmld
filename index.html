@@ -916,7 +916,7 @@ function renderNews(list){
     h+='<div class="nrow"><span class="ntime">'+_esc(String(it.create_time||'').slice(5,16))+'</span>'+tn+_esc(it.rich_text||'')+'</div>';
   }
   box.innerHTML=h;
-  var st=document.getElementById('newsState'); if(st) st.textContent='🟢 新浪财经 · 7×24 · 更新 '+String(it.create_time||'').slice(11,16);
+  var st=document.getElementById('newsState'); if(st) st.textContent='🟢 新浪财经 · 7×24 · 更新 '+String((list[0]&&list[0].create_time)||'').slice(11,16);
 }
 function loadNews(){
   var seq=++_newsSeq, cb='mfxNews'+seq;
