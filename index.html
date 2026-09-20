@@ -169,11 +169,15 @@
   .rlcard .dfn { color:#8a93a3; font-size:11px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .rlbody { margin-top:7px; font-size:11.5px; color:#a8b0c0; line-height:1.8; display:none; border-top:1px solid #262c38; padding-top:7px; }
   .capnote { margin:0 14px 8px; padding:7px 10px; border-radius:8px; background:#12233d; color:#6ea8ff; font-size:11px; line-height:1.7; }
+
+.nrow{padding:8px 2px;border-bottom:1px dashed #232a3b;font-size:12.5px;line-height:1.55;color:#c9d1e8}
+.ntime{color:#66708a;font-size:10px;margin-right:6px;font-family:monospace}
+.ntag{color:#e3b341;font-size:10px;margin-right:4px;border:1px solid #3a3320;border-radius:3px;padding:0 3px}
 </style>
 </head>
 <body>
 <div class="hd"><h1>盘面雷达 🍼 旺仔专用版 🍼 <span style="font-size:11px;color:#66708a" id="mstate"></span></h1><div class="upd" id="upd">加载中…</div></div>
-<div class="tabs3"><span class="on" id="T0" onclick="swPage(0)">盘面情绪</span><span id="T1" onclick="swPage(1)">板块资金</span><span id="T2" onclick="swPage(2)">我的票</span><span id="T4" onclick="swPage(4)">竞价</span><span id="T5" onclick="swPage(5)">📋龙虎榜</span><span id="srcHealth" style="margin-left:auto"></span></div>
+<div class="tabs3"><span class="on" id="T0" onclick="swPage(0)">盘面情绪</span><span id="T6" onclick="swPage(6)">📰快讯</span><span id="T1" onclick="swPage(1)">板块资金</span><span id="T2" onclick="swPage(2)">我的票</span><span id="T4" onclick="swPage(4)">竞价</span><span id="T5" onclick="swPage(5)">📋龙虎榜</span><span id="srcHealth" style="margin-left:auto"></span></div>
 
 <div id="page0">
   <div class="idx" id="idx"></div>
@@ -193,6 +197,11 @@
   <div id="zbLive" class="chips"></div>
   <div class="secttl">💀 跌停池 <b id="dtN"></b></div>
   <div id="dtlist"></div>
+</div>
+
+<div id="page6" style="display:none">
+  <div class="aqstate" id="newsState">🟢 新浪财经 · 7×24 · 60秒自动刷新</div>
+  <div id="newsBox"><div class="empty">加载中…</div></div>
 </div>
 
 <div id="page1" style="display:none">
@@ -236,7 +245,6 @@
   <div class="secttl">🔁 昨日涨停今日竞价溢价 <b id="aqN"></b><span style="font-weight:400;font-size:10px;color:#66708a">（红盘占比）</span></div>
   <div class="aqstat" id="aqStat"></div>
   <div id="aqPrem"></div>
-  </div>
   <div class="secttl">♻️ 昨日炸板修复度 <span style="font-weight:400;font-size:10px;color:#66708a">（红盘比&gt;40%=修复日反包可做）</span></div>
   <div id="aqZB"><div class="empty">—</div></div>
   <div class="secttl" id="aqTopTtl">🚀 昨日涨停今日表现 Top30</div>
@@ -895,17 +903,48 @@ function loadCurrent(){
   else if(page===5) loadLhb(false);
   else loadMy();
 }
+/* ---------- 7x24快讯（新浪财经公开JSONP） ---------- */
+var _newsSeq=0;
+function _esc(s){return String(s||'').replace(/[<>&"]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];});}
+function renderNews(list){
+  var box=document.getElementById('newsBox'); if(!box) return;
+  if(!list||!list.length){ box.innerHTML='<div class="empty">—</div>'; return; }
+  var h='';
+  for(var i=0;i<list.length&&i<40;i++){
+    var it=list[i]||{}, tags=it.tag||[], tn='';
+    for(var j=0;j<tags.length;j++){ var nm=tags[j]&&tags[j].name; if(nm&&nm!=='其他') tn+='<span class="ntag">'+_esc(nm)+'</span>'; }
+    h+='<div class="nrow"><span class="ntime">'+_esc(String(it.create_time||'').slice(5,16))+'</span>'+tn+_esc(it.rich_text||'')+'</div>';
+  }
+  box.innerHTML=h;
+  var st=document.getElementById('newsState'); if(st) st.textContent='🟢 新浪财经 · 7×24 · 更新 '+String(it.create_time||'').slice(11,16);
+}
+function loadNews(){
+  var seq=++_newsSeq, cb='mfxNews'+seq;
+  window[cb]=function(d){
+    try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
+    if(seq!==_newsSeq) return;
+    var list=null;
+    try{ list=d.result.data.feed.list; }catch(e){}
+    renderNews(list);
+  };
+  var old=document.getElementById('newsJP'); if(old&&old.parentNode) old.parentNode.removeChild(old);
+  var s=document.createElement('script'); s.id='newsJP';
+  s.src='https://zhibo.sina.com.cn/api/zhibo/feed?callback='+cb+'&page=1&page_size=40&zhibo_id=152&_='+Date.now();
+  s.onerror=function(){ var st=document.getElementById('newsState'); if(st) st.textContent='🟡 快讯源暂不可达（60秒后重试）'; };
+  document.body.appendChild(s);
+}
+setInterval(function(){ if(!document.hidden) loadNews(); }, 60000);
 function swPage(n){
   page=n;
-  for(var i=0;i<6;i++){
+  for(var i=0;i<7;i++){
     var tb=document.getElementById('T'+i); if(tb) tb.className=i===n?'on':'';
     var pg=document.getElementById('page'+i); if(pg) pg.style.display=i===n?'':'none';
   }
   loadCurrent();
 }
-loadCurrent();
+loadCurrent();loadNews();
 setInterval(loadCurrent,30000);
-document.addEventListener('visibilitychange',function(){ if(!document.hidden){ loadCurrent(); } });
+document.addEventListener('visibilitychange',function(){ if(!document.hidden){ loadCurrent(); loadNews(); } });
 </script>
 </body>
 </html>
