@@ -1045,22 +1045,24 @@ function expMyCsv(){
 }
 /* ---- K线小窗 ---- */
 var kcCode='', kcName='', kcSeg='m';
+function _mk(code){ var s=String(code), a=+s.charAt(0); return (a===4||a===8||s.indexOf('920')===0)?'bj':(a===6||a===9?'sh':'sz'); }
 function showK(code,name){
-  kcCode=String(code).replace(/^((sh|sz|bj)?0*)/,'').slice(-6); kcName=name||''; kcSeg='m';
+  kcCode=String(code).replace(/\D/g,'').slice(-6); kcName=name||''; kcSeg='m';
   document.getElementById('kchart').style.display='';
   document.getElementById('kcTitle').textContent=kcName+' '+kcCode;
   drawKC();
 }
 function closeK(e){ document.getElementById('kchart').style.display='none'; }
 function drawKC(){
-  var sid=secidOf(kcCode); if(!sid) return;
-  var mk=sid.charAt(0), cv=document.getElementById('kcCanvas'), ctx=cv.getContext('2d');
+  if(!/^\d{6}$/.test(kcCode)){ document.getElementById('kcInfo').textContent='代码异常'; return; }
+  var mk=_mk(kcCode), cv=document.getElementById('kcCanvas'), ctx=cv.getContext('2d');
   ctx.fillStyle='#0e1117'; ctx.fillRect(0,0,cv.width,cv.height);
   if(kcSeg==='m'){
-    fetchGet('https://web.ifzq.gtimg.cn/','/appstock/app/minute/query?code='+mk+kcCode).catch(function(){ return jsonpGet('https://web.ifzq.gtimg.cn/','/appstock/app/minute/query?code='+mk+kcCode); }).then(function(d){
+    fetchGet('https://web.ifzq.gtimg.cn','/appstock/app/minute/query?code='+mk+kcCode).catch(function(){ return jsonpGet('https://web.ifzq.gtimg.cn','/appstock/app/minute/query?code='+mk+kcCode); }).then(function(d){
       var arr=null, pre=null; try{ arr=d.data[mk+kcCode].data.data; pre=+d.data[mk+kcCode].qt[mk+kcCode][4]; }catch(e){}
       if(!arr||!arr.length){ document.getElementById('kcInfo').textContent='分时数据暂缺'; return; }
-      var pts=arr.map(function(x){ var f=x.split(' '); return {t:f[0], p:+f[1], a:f[2]?+f[2]:+f[1]}; });
+      var ca=0,cv2=0;
+      var pts=arr.map(function(x){ var f=x.split(' '); var v=+f[2]||0, amt=+f[3]||0; ca+=amt; cv2+=v; return {t:f[0], p:+f[1], a:cv2?ca/cv2/100:+f[1]}; });
       var lo=Math.min(pre,Math.min.apply(null,pts.map(function(x){ return x.p; })));
       var hi=Math.max(pre,Math.max.apply(null,pts.map(function(x){ return x.p; })));
       var pad=(hi-lo)*0.12||0.01; lo-=pad; hi+=pad;
@@ -1072,7 +1074,7 @@ function drawKC(){
       document.getElementById('kcInfo').textContent='现价 '+last+' ('+(pct>0?'+':'')+pct.toFixed(2)+'%) | 昨收 '+pre+' | 白线:价格 黄线:均价 虚线:昨收';
     });
   }else{
-    fetchGet('https://web.ifzq.gtimg.cn/','/appstock/app/fqkline/get?param='+mk+kcCode+',day,,,6,qfq').catch(function(){ return jsonpGet('https://web.ifzq.gtimg.cn/','/appstock/app/fqkline/get?param='+mk+kcCode+',day,,,6,qfq'); }).then(function(d){
+    fetchGet('https://web.ifzq.gtimg.cn','/appstock/app/fqkline/get?param='+mk+kcCode+',day,,,6,qfq').catch(function(){ return jsonpGet('https://web.ifzq.gtimg.cn','/appstock/app/fqkline/get?param='+mk+kcCode+',day,,,6,qfq'); }).then(function(d){
       var arr=null; try{ arr=d.data[mk+kcCode].qfqday||d.data[mk+kcCode].day; }catch(e){}
       if(!arr||!arr.length){ document.getElementById('kcInfo').textContent='K线数据暂缺'; return; }
       arr=arr.slice(-5);
