@@ -173,11 +173,27 @@
 .nrow{padding:8px 2px;border-bottom:1px dashed #232a3b;font-size:12.5px;line-height:1.55;color:#c9d1e8}
 .ntime{color:#66708a;font-size:10px;margin-right:6px;font-family:monospace}
 .ntag{color:#e3b341;font-size:10px;margin-right:4px;border:1px solid #3a3320;border-radius:3px;padding:0 3px}
+/* ===== V2.1 亮色主题+移动端 ===== */
+body.light{background:#eef1f6;color:#1a2233}
+body.light .hd h1{color:#1a2233}
+body.light .card,body.light table,body.light .secttl,body.light div{border-color:#d5dbe6}
+body.light #upd,body.light .empty,body.light span,body.light td,body.light th{color:#3a4358}
+body.light #kchart>div{background:#ffffff}
+body.light #kcInfo{color:#5a6478}
+@media(max-width:640px){
+  body{font-size:15px}
+  .hd h1{font-size:16px}
+  button,input{min-height:40px;font-size:14px}
+  span[onclick]{padding:8px 10px}
+  table{font-size:13px}
+  .myadd input{flex:1}
+}
+
 </style>
 </head>
 <body>
-<div class="hd"><h1>盘面雷达 🍼 旺仔专用版 🍼 <span style="font-size:11px;color:#66708a" id="mstate"></span></h1><div class="upd" id="upd">加载中…</div></div>
-<div class="tabs3"><span class="on" id="T0" onclick="swPage(0)">盘面情绪</span><span id="T6" onclick="swPage(6)">📰快讯</span><span id="T1" onclick="swPage(1)">板块资金</span><span id="T2" onclick="swPage(2)">我的票</span><span id="T4" onclick="swPage(4)">竞价</span><span id="T5" onclick="swPage(5)">📋龙虎榜</span><span id="srcHealth" style="margin-left:auto"></span></div>
+<div class="hd"><h1>盘面雷达 🍼 旺仔专用版 🍼 <span style="font-size:11px;color:#66708a" id="mstate"></span></h1><div style="display:flex;align-items:center;gap:8px"><button onclick="toggleTheme()" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer">🌗</button><div class="upd" id="upd">加载中…</div></div></div>
+<div class="tabs3"><span class="on" id="T0" onclick="swPage(0)">盘面情绪</span><span id="T6" onclick="swPage(6)">📰快讯</span><span id="T1" onclick="swPage(1)">板块资金</span><span id="T2" onclick="swPage(2)">我的票</span><span id="T4" onclick="swPage(4)">竞价</span><span id="T5" onclick="swPage(5)">📋龙虎榜</span><span id="T7" onclick="swPage(7)">🔴涨停池</span><span id="srcHealth" style="margin-left:auto"></span></div>
 
 <div id="page0">
   <div class="idx" id="idx"></div>
@@ -197,6 +213,30 @@
   <div id="zbLive" class="chips"></div>
   <div class="secttl">💀 跌停池 <b id="dtN"></b></div>
   <div id="dtlist"></div>
+</div>
+
+<div id="page7" style="display:none">
+  <div style="display:flex;align-items:center;padding:10px 14px 0;gap:6px;flex-wrap:wrap">
+    <div class="secttl" style="margin:0">🔴 涨停池 <span id="ztN7" style="font-size:12px;color:#8a93a6"></span></div>
+    <div style="margin-left:auto;display:flex;gap:5px">
+      <button onclick="ztFilter=0;renderZtPool()" id="zf0" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">全部</button>
+      <button onclick="ztFilter=2;renderZtPool()" id="zf2" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">连板</button>
+      <button onclick="ztFilter=1;renderZtPool()" id="zf1" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">首板</button>
+      <button onclick="expZtCsv()" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">⬇CSV</button>
+    </div>
+  </div>
+  <div id="ztPoolBox" style="padding:6px 10px"><div class="empty">加载中…</div></div>
+</div>
+
+<div id="kchart" style="display:none;position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,.72);z-index:99" onclick="closeK(event)">
+  <div style="background:#151a24;max-width:520px;margin:36px auto;border-radius:10px;padding:12px" onclick="event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <b id="kcTitle">—</b>
+      <div><span id="kcSeg" style="font-size:11px;color:#e3b341;cursor:pointer;margin-right:8px" onclick="kcSeg=kcSeg=='m'?5:'m';drawKC()">切5日K</span><span style="cursor:pointer" onclick="closeK()">✕</span></div>
+    </div>
+    <canvas id="kcCanvas" width="520" height="230" style="width:100%;background:#0e1117;border-radius:6px"></canvas>
+    <div id="kcInfo" style="font-size:11px;color:#8a93a6;margin-top:5px"></div>
+  </div>
 </div>
 
 <div id="page6" style="display:none">
@@ -227,7 +267,13 @@
 
 <div id="page2" style="display:none">
   <div class="myadd"><input id="codeIn" type="tel" maxlength="6" placeholder="输入6位代码，如 002935" onkeydown="if(event.key==='Enter')addStock()"><button onclick="addStock()">添加</button></div>
-  <div style="display:flex;gap:6px;padding:0 14px 8px;align-items:center">
+  
+  <div id="alertCfg" style="display:flex;gap:6px;padding:0 14px 8px;align-items:center;font-size:12px">
+    <span style="color:#8892a8">🔔预警</span>
+    <input id="alertPct" type="number" value="5" min="1" max="19" style="width:52px;background:#171c26;border:1px solid #2a3142;color:#e8e8e8;border-radius:6px;padding:4px 6px">%
+    <button id="alertBtn" onclick="toggleAlert()" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:6px;padding:4px 10px;cursor:pointer">关闭</button>
+    <span id="alertState" style="color:#66708a;font-size:11px"></span>
+  </div><div style="display:flex;gap:6px;padding:0 14px 8px;align-items:center">
     <button onclick="document.getElementById('_impFile').click()" style="flex:1;background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:6px 0;font-size:12px;cursor:pointer">📂 导入恢复</button>
     </div>
   <div class="rgbar" id="rgbar"></div>
@@ -901,6 +947,7 @@ function loadCurrent(){
   else if(page===1) loadSector();
   else if(page===4) loadAuction();
   else if(page===5) loadLhb(false);
+  else if(page===7) loadZtPool();
   else loadMy();
 }
 /* ---------- 7x24快讯（新浪财经公开JSONP） ---------- */
@@ -936,7 +983,7 @@ function loadNews(){
 setInterval(function(){ if(!document.hidden) loadNews(); }, 60000);
 function swPage(n){
   page=n;
-  for(var i=0;i<7;i++){
+  for(var i=0;i<8;i++){
     var tb=document.getElementById('T'+i); if(tb) tb.className=i===n?'on':'';
     var pg=document.getElementById('page'+i); if(pg) pg.style.display=i===n?'':'none';
   }
@@ -945,6 +992,165 @@ function swPage(n){
 loadCurrent();loadNews();
 setInterval(loadCurrent,30000);
 document.addEventListener('visibilitychange',function(){ if(!document.hidden){ loadCurrent(); loadNews(); } });
+/* ===== V2.1 涨停池/分时K线小窗/自选预警/CSV/主题 ===== */
+var ztCache=[], ztFilter=0, _ztT=0;
+function getZtPool(cb){
+  tryFetchEX('/getTopicZTPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=320&sort=fbt%3Aasc&date='+today()).then(function(d){
+    var pool=null; try{ pool=d.data.pool; }catch(e){}
+    ztCache=pool||[]; cb(ztCache);
+  }).catch(function(){ cb(null); });
+}
+function loadZtPool(){
+  if(Date.now()-_ztT>20000){ _ztT=Date.now(); getZtPool(function(){ renderZtPool(); }); }
+  else renderZtPool();
+}
+function _fz(v){ return (v/1e8).toFixed(2); }
+function _ft(v){ v=String(v); while(v.length<6) v='0'+v; return v.slice(0,2)+':'+v.slice(2,4)+':'+v.slice(4,6); }
+function renderZtPool(){
+  var box=document.getElementById('ztPoolBox'); if(!box) return;
+  var list=ztCache||[];
+  document.getElementById('ztN7').textContent='(共'+list.length+'只 · '+today().slice(4,6)+'/'+today().slice(6,8)+')';
+  ['zf0','zf1','zf2'].forEach(function(id){ var el=document.getElementById(id); if(el) el.style.color = id==='zf'+ztFilter?'#e3b341':'#8892a8'; });
+  if(ztFilter===1) list=list.filter(function(o){ return o.lbc===1; });
+  if(ztFilter===2) list=list.filter(function(o){ return o.lbc>=2; });
+  list=list.slice().sort(function(a,b){ return b.lbc-a.lbc || b.fund-a.fund; });
+  var h='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="color:#66708a;text-align:left"><th style="padding:4px">名称</th><th>代码</th><th>板</th><th>封单(亿)</th><th>开</th><th>首封</th><th>板块</th></tr>';
+  list.forEach(function(o){
+    var nm=o.n||'', cd=o.c||'';
+    h+='<tr style="border-top:1px solid #1c2230"><td style="padding:5px 4px"><span style="cursor:pointer;color:'+(o.lbc>=3?'#e3b341':'#4da3ff')+'" onclick="showK(\''+cd+'\',\''+nm+'\')">'+nm+'</span></td><td style="color:#66708a">'+cd+'</td><td>'+(o.lbc||1)+'</td><td>'+(o.fund?_fz(o.fund):'—')+'</td><td>'+(o.zbc||0)+'</td><td style="color:#66708a">'+(o.fbt?_ft(o.fbt):'—')+'</td><td style="color:#8a93a6;font-size:11px">'+_esc(o.hybk||'')+'</td></tr>';
+  });
+  box.innerHTML=h+'</table></div>';
+}
+function expZtCsv(){
+  var rows=[['名称','代码','连板数','封单(元)','开板次数','首封时间','板块']];
+  (ztCache||[]).forEach(function(o){ rows.push([o.n,o.c,o.lbc||1,o.fund||0,o.zbc||0,o.fbt||'',o.hybk||'']); });
+  _dlCsv('涨停池_'+today()+'.csv', rows);
+}
+function _dlCsv(fname, rows){
+  var txt=rows.map(function(r){ return r.map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(','); }).join('\r\n');
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\ufeff'+encodeURIComponent(txt); a.download=fname; a.click();
+}
+function expMyCsv(){
+  var my=getMy(); var rows=[['名称','代码','现价','涨跌幅%','时间']];
+  var codes=my.map(function(s){ return secidOf(s.c).replace('.',''); }).join(',');
+  if(!codes){ alert('自选为空'); return; }
+  fetchGet('https://qt.gtimg.cn/','/q='+codes).catch(function(){ return jsonpGet('https://qt.gtimg.cn/','/q='+codes); }).then(function(t){
+    String(t).split(';').forEach(function(seg){
+      var v=seg.split('"')[1]; if(!v) return; var f=v.split('~');
+      rows.push([f[1],f[2],f[3],((+f[3]-+f[4])/+f[4]*100).toFixed(2),f[30]]);
+    });
+    _dlCsv('自选股_'+today()+'.csv', rows);
+  });
+}
+/* ---- K线小窗 ---- */
+var kcCode='', kcName='', kcSeg='m';
+function showK(code,name){
+  kcCode=String(code).replace(/^((sh|sz|bj)?0*)/,'').slice(-6); kcName=name||''; kcSeg='m';
+  document.getElementById('kchart').style.display='';
+  document.getElementById('kcTitle').textContent=kcName+' '+kcCode;
+  drawKC();
+}
+function closeK(e){ document.getElementById('kchart').style.display='none'; }
+function drawKC(){
+  var sid=secidOf(kcCode); if(!sid) return;
+  var mk=sid.charAt(0), cv=document.getElementById('kcCanvas'), ctx=cv.getContext('2d');
+  ctx.fillStyle='#0e1117'; ctx.fillRect(0,0,cv.width,cv.height);
+  if(kcSeg==='m'){
+    fetchGet('https://web.ifzq.gtimg.cn/','/appstock/app/minute/query?code='+mk+kcCode).catch(function(){ return jsonpGet('https://web.ifzq.gtimg.cn/','/appstock/app/minute/query?code='+mk+kcCode); }).then(function(d){
+      var arr=null, pre=null; try{ arr=d.data[mk+kcCode].data.data; pre=+d.data[mk+kcCode].qt[mk+kcCode][4]; }catch(e){}
+      if(!arr||!arr.length){ document.getElementById('kcInfo').textContent='分时数据暂缺'; return; }
+      var pts=arr.map(function(x){ var f=x.split(' '); return {t:f[0], p:+f[1], a:f[2]?+f[2]:+f[1]}; });
+      var lo=Math.min(pre,Math.min.apply(null,pts.map(function(x){ return x.p; })));
+      var hi=Math.max(pre,Math.max.apply(null,pts.map(function(x){ return x.p; })));
+      var pad=(hi-lo)*0.12||0.01; lo-=pad; hi+=pad;
+      var W=cv.width,H=cv.height,y=function(p){ return H-(p-lo)/(hi-lo)*H; };
+      ctx.strokeStyle='#2a3142'; ctx.setLineDash([4,3]); ctx.beginPath(); ctx.moveTo(0,y(pre)); ctx.lineTo(W,y(pre)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle='#e3b341'; ctx.beginPath(); pts.forEach(function(x,i){ var px=i/(pts.length-1)*W; i?ctx.lineTo(px,y(x.a)):ctx.moveTo(px,y(x.a)); }); ctx.stroke();
+      ctx.strokeStyle='#4da3ff'; ctx.lineWidth=1.5; ctx.beginPath(); pts.forEach(function(x,i){ var px=i/(pts.length-1)*W; i?ctx.lineTo(px,y(x.p)):ctx.moveTo(px,y(x.p)); }); ctx.stroke(); ctx.lineWidth=1;
+      var last=pts[pts.length-1].p, pct=((last-pre)/pre*100);
+      document.getElementById('kcInfo').textContent='现价 '+last+' ('+(pct>0?'+':'')+pct.toFixed(2)+'%) | 昨收 '+pre+' | 白线:价格 黄线:均价 虚线:昨收';
+    });
+  }else{
+    fetchGet('https://web.ifzq.gtimg.cn/','/appstock/app/fqkline/get?param='+mk+kcCode+',day,,,6,qfq').catch(function(){ return jsonpGet('https://web.ifzq.gtimg.cn/','/appstock/app/fqkline/get?param='+mk+kcCode+',day,,,6,qfq'); }).then(function(d){
+      var arr=null; try{ arr=d.data[mk+kcCode].qfqday||d.data[mk+kcCode].day; }catch(e){}
+      if(!arr||!arr.length){ document.getElementById('kcInfo').textContent='K线数据暂缺'; return; }
+      arr=arr.slice(-5);
+      var lo=1e18,hi=-1e18; arr.forEach(function(r){ lo=Math.min(lo,+r[2],+r[3]); hi=Math.max(hi,+r[2],+r[3]); });
+      var pad=(hi-lo)*0.1||0.01; lo-=pad; hi+=pad;
+      var W=cv.width,H=cv.height,bw=W/arr.length*0.6, y=function(p){ return H-(p-lo)/(hi-lo)*H; };
+      arr.forEach(function(r,i){
+        var o=+r[1],cl=+r[2],hh=+r[3],ll=+r[4], cx=(i+0.5)/arr.length*W, up=cl>=o;
+        ctx.strokeStyle=up?'#e05555':'#3cb371'; ctx.fillStyle=up?'#e05555':'#3cb371';
+        ctx.beginPath(); ctx.moveTo(cx,y(hh)); ctx.lineTo(cx,y(ll)); ctx.stroke();
+        var t=y(Math.max(o,cl)), b=y(Math.min(o,cl));
+        ctx.fillRect(cx-bw/2,t,bw,Math.max(1,b-t));
+      });
+      var last=arr[arr.length-1], pct=((+last[2]-+last[1])/+last[1]*100);
+      document.getElementById('kcInfo').textContent=last[0]+' 收'+last[2]+' ('+(pct>0?'+':'')+pct.toFixed(2)+'%) | 近5日K线';
+    });
+  }
+}
+/* ---- 自选预警 ---- */
+function _alertCfg(){ try{ return JSON.parse(localStorage.getItem('mfx_alert')||'{"on":false,"pct":5}'); }catch(e){ return {on:false,pct:5}; } }
+function toggleAlert(){
+  var cfg=_alertCfg();
+  if(!cfg.on && window.Notification && Notification.permission!=='granted'){ Notification.requestPermission(); }
+  cfg.on=!cfg.on; localStorage.setItem('mfx_alert',JSON.stringify(cfg));
+  var p=document.getElementById('alertPct'); if(p) cfg.pct=Math.max(1,Math.min(19,+p.value||5)), localStorage.setItem('mfx_alert',JSON.stringify(cfg));
+  _renderAlertUI();
+}
+function _renderAlertUI(){
+  var cfg=_alertCfg(), b=document.getElementById('alertBtn'), s=document.getElementById('alertState');
+  if(b){ b.textContent=cfg.on?'✓开启':'关闭'; b.style.color=cfg.on?'#3cb371':'#8892a8'; }
+  if(s){ s.textContent=cfg.on?('自选±'+cfg.pct+'%或触涨停提醒 · 60秒巡检'):'未开启'; }
+  var p=document.getElementById('alertPct'); if(p) p.value=cfg.pct;
+}
+var _alertFired={};
+function checkAlerts(){
+  var cfg=_alertCfg(); if(!cfg.on) return;
+  var my=getMy(); if(!my.length) return;
+  var codes=my.map(function(s){ return s.c; });
+  fetchGet('https://qt.gtimg.cn/','/q='+codes.join(',')).catch(function(){ return jsonpGet('https://qt.gtimg.cn/','/q='+codes.join(',')); }).then(function(t){
+    var msgs=[];
+    String(t).split(';').forEach(function(seg){
+      var v=seg.split('"')[1]; if(!v) return; var f=v.split('~');
+      var cd=f[2], nm=f[1], cur=+f[3], pre=+f[4];
+      var pct=(cur-pre)/pre*100;
+      var lim=cd.charAt(0)==='3'||cd.charAt(0)==='6'&&cd.indexOf('68')===1?19.7:(cd.charAt(0)==='6'||cd.charAt(0)==='0'?9.7:29.7);
+      var key=cd+'_'+Math.floor(Date.now()/1800000);
+      if(Math.abs(pct)>=cfg.pct && !_alertFired[key]){ msgs.push(nm+' '+pct.toFixed(1)+'%'); _alertFired[key]=1; }
+      var k2=cd+'_zt_'+Math.floor(Date.now()/1800000);
+      if(pct>=lim && !_alertFired[k2]){ msgs.push('🔴 '+nm+' 触及涨停!'); _alertFired[k2]=1; }
+    });
+    if(msgs.length){
+      var txt=msgs.join(' | ');
+      if(window.Notification && Notification.permission==='granted'){ try{ new Notification('📌 盘面雷达预警', {body:txt}); }catch(e){} }
+      beep();
+      var o=document.title; document.title='🔴🔴 '+txt.slice(0,30);
+      setTimeout(function(){ document.title=o; },15000);
+      var st=document.getElementById('alertState'); if(st) st.textContent='最近触发: '+txt.slice(0,40);
+    }
+  });
+}
+function beep(){
+  try{
+    var ac=new (window.AudioContext||window.webkitAudioContext)();
+    var o=ac.createOscillator(), g=ac.createGain();
+    o.connect(g); g.connect(ac.destination); o.frequency.value=880; o.type='sine';
+    g.gain.setValueAtTime(0.15,ac.currentTime); g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.4);
+    o.start(); o.stop(ac.currentTime+0.4);
+  }catch(e){}
+}
+setInterval(checkAlerts, 60000);
+/* ---- 主题 ---- */
+function toggleTheme(){
+  document.body.classList.toggle('light');
+  try{ localStorage.setItem('mfx_theme', document.body.classList.contains('light')?'light':'dark'); }catch(e){}
+}
+try{ if(localStorage.getItem('mfx_theme')==='light') document.body.classList.add('light'); }catch(e){}
+_renderAlertUI();
+
 </script>
 </body>
 </html>
