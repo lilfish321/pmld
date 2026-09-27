@@ -173,7 +173,7 @@
 .nrow{padding:8px 2px;border-bottom:1px dashed #232a3b;font-size:12.5px;line-height:1.55;color:#c9d1e8}
 .ntime{color:#66708a;font-size:10px;margin-right:6px;font-family:monospace}
 .ntag{color:#e3b341;font-size:10px;margin-right:4px;border:1px solid #3a3320;border-radius:3px;padding:0 3px}
-/* ===== V2.1 亮色主题+移动端 ===== */
+/* ===== V2.2 亮色主题+移动端 ===== */
 body.light{background:#eef1f6;color:#1a2233}
 body.light .hd h1{color:#1a2233}
 body.light .card,body.light table,body.light .secttl,body.light div{border-color:#d5dbe6}
@@ -189,11 +189,45 @@ body.light #kcInfo{color:#5a6478}
   .myadd input{flex:1}
 }
 
+
+/* ===== V2.2 UI现代化覆盖层（追加式，仅覆盖不重写） ===== */
+:root{
+  --bg:#0d1017; --card:#151a24; --card2:#1a2130; --line:#212837;
+  --txt:#e9ecf2; --txt2:#98a2b3; --txt3:#5f6b7f;
+  --brand:#4d7dff; --brand2:#3a5fd9; --gold:#ffd23e;
+}
+body{ background:radial-gradient(1100px 700px at 50% -180px,#141b2b 0%,var(--bg) 60%); font-variant-numeric:tabular-nums; }
+.hd h1{ background:linear-gradient(90deg,#ffffff,#9db4ff); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:.5px; }
+.tabs3{ background:rgba(21,26,36,.92); border:1px solid var(--line); box-shadow:0 6px 20px rgba(0,0,0,.35); }
+.tabs3 span{ position:relative; transition:color .2s, background .25s, box-shadow .25s; border-radius:10px; }
+.tabs3 span:hover{ color:#c6cddb; }
+.tabs3 span.on{ background:linear-gradient(135deg,var(--brand) 0%,var(--brand2) 100%); box-shadow:0 4px 14px rgba(77,125,255,.35); }
+.thermo .tg, .idx .card, .kings .k{ background:linear-gradient(180deg,var(--card) 0%,#121722 100%); border:1px solid var(--line); transition:border-color .2s, transform .15s; }
+.thermo .tg:hover, .idx .card:hover{ border-color:#31405c; transform:translateY(-1px); }
+.secttl{ letter-spacing:.3px; }
+.secttl::before{ content:''; display:inline-block; width:3px; height:10px; border-radius:2px; background:linear-gradient(180deg,var(--gold),#b8860b); margin-right:7px; }
+.lrow, .row, .mrow{ border-bottom:1px solid rgba(33,40,55,.6); transition:background .15s; }
+.lrow:hover, .mrow:hover{ background:rgba(38,48,70,.35); }
+.pos{ text-shadow:0 0 12px rgba(240,74,74,.22); }
+.neg{ text-shadow:0 0 12px rgba(34,192,122,.18); }
+button, .tabs span, .sorts span, .myadd input, .myadd button{ transition:all .2s; }
+.myadd button:hover, .rf button:hover{ filter:brightness(1.15); }
+/* 亮色主题同步打磨 */
+body.light{ --bg:#f4f6fa; --card:#ffffff; --line:#e2e8f2; --txt:#1c2330; --txt2:#5c6780; --txt3:#98a1b0; }
+body.light{ background:linear-gradient(180deg,#eef2f8 0%,#f7f9fc 100%); }
+body.light .hd h1{ background:linear-gradient(90deg,#1c2330,#3a5fd9); -webkit-background-clip:text; background-clip:text; }
+body.light .tabs3{ background:rgba(255,255,255,.9); border-color:var(--line); box-shadow:0 4px 14px rgba(30,50,90,.08); }
+body.light .tabs3 span{ color:#7a8496; }
+body.light .tabs3 span.on{ color:#fff; }
+body.light .thermo .tg, body.light .idx .card, body.light .kings .k{ background:#fff; border:1px solid var(--line); box-shadow:0 2px 10px rgba(30,50,90,.06); }
+body.light .lrow, body.light .row, body.light .mrow{ border-bottom-color:#eef1f6; }
+body.light .lrow:hover, body.light .mrow:hover{ background:rgba(90,120,180,.08); }
+body.light .secttl b{ color:#c78a00; }
 </style>
 </head>
 <body>
 <div class="hd"><h1>盘面雷达 🍼 旺仔专用版 🍼 <span style="font-size:11px;color:#66708a" id="mstate"></span></h1><div style="display:flex;align-items:center;gap:8px"><button onclick="toggleTheme()" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer">🌗</button><div class="upd" id="upd">加载中…</div></div></div>
-<div class="tabs3"><span class="on" id="T0" onclick="swPage(0)">盘面情绪</span><span id="T6" onclick="swPage(6)">📰快讯</span><span id="T1" onclick="swPage(1)">板块资金</span><span id="T2" onclick="swPage(2)">我的票</span><span id="T4" onclick="swPage(4)">竞价</span><span id="T5" onclick="swPage(5)">📋龙虎榜</span><span id="T7" onclick="swPage(7)">🔴涨停池</span><span id="srcHealth" style="margin-left:auto"></span></div>
+<div class="tabs3"><span class="on" id="T0" onclick="swPage(0)">盘面情绪</span><span id="T6" onclick="swPage(6)">📰快讯</span><span id="T1" onclick="swPage(1)">板块资金</span><span id="T2" onclick="swPage(2)">我的票</span><span id="T4" onclick="swPage(4)">竞价</span><span id="T5" onclick="swPage(5)">🔥涨停哨兵</span><span id="T7" onclick="swPage(7)">🔴涨停池</span><span id="srcHealth" style="margin-left:auto"></span></div>
 
 <div id="page0">
   <div class="idx" id="idx"></div>
@@ -300,15 +334,16 @@ body.light #kcInfo{color:#5a6478}
 
 <div id="page5" style="display:none">
   <div style="display:flex;align-items:center;padding:10px 14px 0;gap:10px">
-    <div class="secttl" style="margin:0">📋 龙虎榜席位透视 <b id="lhbN"></b></div>
-    <button onclick="loadLhb(true)" style="margin-left:auto;background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer">🔄 刷新</button>
+    <div class="secttl" style="margin:0">🔥 涨停哨兵 <b id="senN"></b></div>
+    <button onclick="toggleSentinel()" id="senBtn" style="margin-left:auto;background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer">开启巡检</button>
   </div>
-  <div class="hint" id="lhbHint">日期：18:15后为今日榜 / 18:15前为昨日榜</div>
-  <div class="secttl">💎 机构/外资真买榜 <span style="font-weight:400;font-size:10px;color:#66708a">（净买额Top15，机构席位≥2=真买加分）</span></div>
-  <div id="lhbJg"><div class="empty">—</div></div>
-  <div class="secttl">🔥 净买/净卖额榜</div>
-  <div id="lhbTop"><div class="empty">—</div></div>
-  <div id="lhbWarn"><div class="empty">—</div></div>
+  <div class="hint" id="senHint">盯自选里的涨停票：💥炸板 / 🟡封单衰减 / 🟢回封，60秒巡检（浏览器弹窗+声音）。封单衰减=较当日峰值。</div>
+  <div class="secttl">📌 我的涨停票 <span style="font-weight:400;font-size:10px;color:#66708a">（自选∩今日涨停池）</span></div>
+  <div id="senMy"><div class="empty">—</div></div>
+  <div class="secttl">🧱 封单榜Top20 <span style="font-weight:400;font-size:10px;color:#66708a">（点名称看K线小窗）</span></div>
+  <div id="senPool"><div class="empty">—</div></div>
+  <div class="secttl">⚡ 今日异动记录</div>
+  <div id="senLog"><div class="empty">—</div></div>
 </div>
 
 <div class="foot">数据源：东方财富公开接口 · 仅供参考不构成投资建议 · 记得天天好好学习 📚</div>
@@ -857,46 +892,86 @@ function ensureAmp(pool, cb){
     })).then(function(){ done++; if(done===batches.length){ try{ localStorage.setItem('mfx_amp_'+today(), JSON.stringify(cache)); }catch(e){} if(cb) cb(true); } });
   });
 }
-/* ---------- 龙虎榜（东财datacenter） ---------- */
-var _lhbCache={d:'',rows:null};
-function loadLhb(force){
-  var el=document.getElementById('lhbTop'); if(!el) return;
-  /*  修复：龙虎榜日期错误——lastTradeDay()永远返回昨天，18:15后今天的榜已发布却拉昨日
-     正确语义：交易日18:15后=今天 / 18:15前=昨天(昨日榜全天可看) / 周末=周五 */
-  var _now=new Date(), _wd=_now.getDay(), _t=_now.getHours()*100+_now.getMinutes();
-  var _fmt=function(dt){ return dt.getFullYear()+'-'+('0'+(dt.getMonth()+1)).slice(-2)+'-'+('0'+dt.getDate()).slice(-2); };
-  var dstr=(_wd===0)?_fmt(new Date(_now.getTime()-2*864e5)):((_wd===6)?_fmt(new Date(_now.getTime()-864e5)):(_t>=1815?_fmt(_now):lastTradeDay()));
-  if(_lhbCache.d===dstr && _lhbCache.rows && !force){ renderLhb(_lhbCache.rows); return; }
-  var url='https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DAILYBILLBOARD_DETAILSNEW&columns=ALL&filter=(TRADE_DATE%3D\''+dstr+'\')&pageindex=0&pagesize=100&sortColumns=BILLBOARD_NET_AMT&sortTypes=-1&source=WEB&client=WEB';
-  fetch(url,{mode:'cors'}).then(function(r){ return r.json(); }).then(function(j){
-    var rows=(j.result&&j.result.data)||[];
-    if(!rows.length){ el.innerHTML='<div class="empty">暂无龙虎榜数据（18:15后更新，或'+dstr+'无上榜）</div>'; return; }
-    _lhbCache={d:dstr,rows:rows};
-    renderLhb(rows);
-  }).catch(function(){
-      /* CORS兜底：jsonp */
-    var cb='_lhbcb'+Date.now();
-    window[cb]=function(j){ var rows=(j.result&&j.result.data)||[]; if(rows.length){ _lhbCache={d:dstr,rows:rows}; renderLhb(rows);} else { el.innerHTML='<div class="empty">暂无数据</div>'; } try{ delete window[cb]; }catch(e){} };
-    var s=document.createElement('script'); s.src='https://datacenter-web.eastmoney.com/api/data/v1/get?cb='+cb+'&reportName=RPT_DAILYBILLBOARD_DETAILSNEW&columns=ALL&filter=(TRADE_DATE%3D\''+dstr+'\')&pageindex=0&pagesize=100&sortColumns=BILLBOARD_NET_AMT&sortTypes=-1&source=WEB&client=WEB';
-    s.onerror=function(){ el.innerHTML='<div class="empty">龙虎榜源暂不可用（datacenter域被拦截）——稍后重试或用东财App核对</div>'; document.head.removeChild(s); };
-    document.head.appendChild(s);
-  });
+/* ---------- V2.2 涨停哨兵：炸板/封单衰减/回封监控 ---------- */
+var _senCfg={on:false};
+try{ _senCfg=JSON.parse(localStorage.getItem('mfx_sentinel')||'{"on":false}'); }catch(e){}
+var _senPeak={}, _senFired={}, _senLog=[];
+try{ _senPeak=JSON.parse(localStorage.getItem('mfx_fundpeak_'+today())||'{}'); }catch(e){}
+try{ _senLog=JSON.parse(localStorage.getItem('mfx_senlog_'+today())||'[]'); }catch(e){}
+
+function toggleSentinel(){
+  if(!_senCfg.on && window.Notification && Notification.permission!=='granted'){ Notification.requestPermission(); }
+  _senCfg.on=!_senCfg.on;
+  try{ localStorage.setItem('mfx_sentinel',JSON.stringify(_senCfg)); }catch(e){}
+  _renderSen();
+  if(_senCfg.on) checkSentinel(true);
 }
-function renderLhb(rows){
-  var by={};
-  rows.forEach(function(r){
-    var c=r.SECURITY_CODE; if(!c) return;
-    if(!by[c]) by[c]={c:String(c),n:r.SECURITY_NAME_ABBR||'',net:r.BILLBOARD_NET_AMT||0,buy:r.BILLBOARD_BUY_AMT||0,sell:r.BILLBOARD_SELL_AMT||0,chg:r.CHANGE_RATE||0};
-    by[c].net+=r.BILLBOARD_NET_AMT||0;
-  });
-  var list=Object.values(by).sort(function(a,b){ return b.net-a.net; });
-  document.getElementById('lhbN').textContent='('+list.length+'只，'+_lhbCache.d+')';
-  document.getElementById('lhbTop').innerHTML=list.slice(0,25).map(function(o){
-    return '<div class="mrow"><div><span class="nm2">'+o.n+'</span><div class="cd">'+o.c+' · 买'+yi(o.buy)+'/卖'+yi(o.sell)+'</div></div><div class="'+(o.net>0?'pos':'neg')+'" style="font-size:15px">'+yi(o.net)+'</div><div style="text-align:right;font-size:10px;color:#66708a">'+(o.chg!=null?o.chg.toFixed(2)+'%':'—')+'</div></div>';
+function _renderSen(){
+  var b=document.getElementById('senBtn'); if(!b) return;
+  b.textContent=_senCfg.on?'✓巡检中':'开启巡检';
+  b.style.color=_senCfg.on?'#3cb371':'#8892a8';
+}
+function _senPush(txt){
+  var hh=new Date().toTimeString().slice(0,5);
+  _senLog.unshift('['+hh+'] '+txt); _senLog=_senLog.slice(0,40);
+  try{ localStorage.setItem('mfx_senlog_'+today(),JSON.stringify(_senLog)); }catch(e){}
+  if(window.Notification && Notification.permission==='granted'){ try{ new Notification('🔥 涨停哨兵', {body:txt}); }catch(e){} }
+  beep();
+  renderSenLog();
+}
+function renderSenLog(){
+  var el=document.getElementById('senLog'); if(!el) return;
+  el.innerHTML=_senLog.length? _senLog.map(function(s){ return '<div class="mrow" style="font-size:11px;color:#a8b2c4">'+s+'</div>'; }).join('') : '<div class="empty">暂无异动</div>';
+}
+function renderSenMy(pool){
+  var el=document.getElementById('senMy'); if(!el) return;
+  var my=getMy().map(function(s){ return String(s.c); });
+  var rows=(pool||ztCache||[]).filter(function(z){ return my.indexOf(String(z.c))>=0; });
+  var nEl=document.getElementById('senN'); if(nEl) nEl.textContent='('+rows.length+'只在盯)';
+  if(!rows.length){ el.innerHTML='<div class="empty">自选里暂无今日涨停票</div>'; return; }
+  el.innerHTML=rows.map(function(z){
+    var pk=_senPeak[String(z.c)]||z.fund||0;
+    var dec=pk>0? Math.max(0,(1-(z.fund||0)/pk)*100) : 0;
+    var dc = dec>=50?'🟠':(dec>=30?'🟡':'');
+    return '<div class="mrow"><div><span class="nm2" onclick="showK(\''+z.c+'\',\''+(z.n||'')+'\')" style="cursor:pointer">'+(z.n||'—')+'</span><div class="cd">'+z.c+' · '+(z.lbc||1)+'板 · 炸'+(z.zbc||0)+'次</div></div><div class="pos" style="font-size:13px">'+_fz(z.fund||0)+'亿</div><div style="text-align:right;font-size:10px;color:'+(dec>=50?'#ffab5e':'#66708a')+'">'+dc+'衰减'+dec.toFixed(0)+'%</div></div>';
+  }).join('');
+}
+function renderSenPool(pool){
+  var el=document.getElementById('senPool'); if(!el) return;
+  var rows=(pool||[]).slice().sort(function(a,b){ return (+b.fund||0)-(+a.fund||0); }).slice(0,20);
+  el.innerHTML=rows.map(function(z){
+    return '<div class="mrow"><div><span class="nm2" onclick="showK(\''+z.c+'\',\''+(z.n||'')+'\')" style="cursor:pointer">'+(z.n||'—')+'</span><div class="cd">'+z.c+' · '+(z.lbc||1)+'板 · 炸'+(z.zbc||0)+' · 首封'+(z.fbt?_ft(z.fbt):'—')+'</div></div><div class="pos" style="font-size:13px">'+_fz(z.fund||0)+'亿</div><div style="text-align:right;font-size:10px;color:#8a93a6">'+_esc(z.hybk||'')+'</div></div>';
   }).join('')||'<div class="empty">—</div>';
-  document.getElementById('lhbJg').innerHTML='<div class="empty">席位级数据见东财App明细</div>';
-  document.getElementById('lhbWarn').innerHTML='<div class="empty">—</div>';
 }
+function checkSentinel(force){
+  var t=new Date().getHours()*100+new Date().getMinutes();
+  if(t<925 || t>1505){ return; }  /* 盘后只看不响 */
+  getZtPool(function(pool){
+    if(!pool) return;
+    pool.forEach(function(z){  /* ① 封单峰值更新（全池，含未加自选） */
+      var k=String(z.c), f=+z.fund||0;
+      if(f>(_senPeak[k]||0)) _senPeak[k]=f;
+    });
+    try{ localStorage.setItem('mfx_fundpeak_'+today(),JSON.stringify(_senPeak)); }catch(e){}
+    renderSenMy(pool); renderSenPool(pool); renderSenLog();
+    if(!_senCfg.on && !force) return;
+    var my=getMy().map(function(s){ return String(s.c); });
+    pool.forEach(function(z){  /* ② 警报：自选∩池 */
+      var k=String(z.c); if(my.indexOf(k)<0) return;
+      var f=+z.fund||0, pk=_senPeak[k]||f;
+      if((+z.zbc||0)>0 && !_senFired[k+'_boom']){ _senFired[k+'_boom']=1; _senPush('💥 '+z.n+' 炸板（开'+z.zbc+'次）· 封单剩'+_fz(f)+'亿'); }
+      if(pk>0 && f>0 && f<pk*0.7 && !_senFired[k+'_dec']){ _senFired[k+'_dec']=1; _senPush('🟡 '+z.n+' 封单衰减'+((1-f/pk)*100).toFixed(0)+'%（'+_fz(pk)+'→'+_fz(f)+'亿）'); }
+      if(_senFired[k+'_boom'] && (+z.zbc||0)===0 && !_senFired[k+'_hf']){ _senFired[k+'_hf']=1; _senPush('🟢 '+z.n+' 回封稳住'); }
+    });
+  });
+}
+function loadSentinel(){
+  var t=new Date().getHours()*100+new Date().getMinutes();
+  if(Date.now()-_ztT>20000){ _ztT=Date.now(); getZtPool(function(){ checkSentinel(false); }); }
+  else checkSentinel(false);
+}
+setInterval(function(){ if(!document.hidden) checkSentinel(false); }, 60000);
+_renderSen();
 function loadAuction(){
   var st=marketState(), t=new Date().getHours()*100+new Date().getMinutes();
   document.getElementById('aqState').innerHTML = st==='休市日'?'休市日：显示上一交易日数据'
@@ -946,7 +1021,7 @@ function loadCurrent(){
   if(page===0) loadMood();
   else if(page===1) loadSector();
   else if(page===4) loadAuction();
-  else if(page===5) loadLhb(false);
+  else if(page===5) loadSentinel();
   else if(page===7) loadZtPool();
   else loadMy();
 }
@@ -992,7 +1067,7 @@ function swPage(n){
 loadCurrent();loadNews();
 setInterval(loadCurrent,30000);
 document.addEventListener('visibilitychange',function(){ if(!document.hidden){ loadCurrent(); loadNews(); } });
-/* ===== V2.1 涨停池/分时K线小窗/自选预警/CSV/主题 ===== */
+/* ===== V2.2 涨停池/分时K线小窗/自选预警/CSV/主题 ===== */
 var ztCache=[], ztFilter=0, _ztT=0;
 function getZtPool(cb){
   tryFetchEX('/getTopicZTPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=320&sort=fbt%3Aasc&date='+today()).then(function(d){
@@ -1045,24 +1120,22 @@ function expMyCsv(){
 }
 /* ---- K线小窗 ---- */
 var kcCode='', kcName='', kcSeg='m';
-function _mk(code){ var s=String(code), a=+s.charAt(0); return (a===4||a===8||s.indexOf('920')===0)?'bj':(a===6||a===9?'sh':'sz'); }
 function showK(code,name){
-  kcCode=String(code).replace(/\D/g,'').slice(-6); kcName=name||''; kcSeg='m';
+  kcCode=String(code).replace(/^((sh|sz|bj)?0*)/,'').slice(-6); kcName=name||''; kcSeg='m';
   document.getElementById('kchart').style.display='';
   document.getElementById('kcTitle').textContent=kcName+' '+kcCode;
   drawKC();
 }
 function closeK(e){ document.getElementById('kchart').style.display='none'; }
 function drawKC(){
-  if(!/^\d{6}$/.test(kcCode)){ document.getElementById('kcInfo').textContent='代码异常'; return; }
-  var mk=_mk(kcCode), cv=document.getElementById('kcCanvas'), ctx=cv.getContext('2d');
+  var sid=secidOf(kcCode); if(!sid) return;
+  var mk=sid.charAt(0), cv=document.getElementById('kcCanvas'), ctx=cv.getContext('2d');
   ctx.fillStyle='#0e1117'; ctx.fillRect(0,0,cv.width,cv.height);
   if(kcSeg==='m'){
-    fetchGet('https://web.ifzq.gtimg.cn','/appstock/app/minute/query?code='+mk+kcCode).catch(function(){ return jsonpGet('https://web.ifzq.gtimg.cn','/appstock/app/minute/query?code='+mk+kcCode); }).then(function(d){
+    fetchGet('https://web.ifzq.gtimg.cn/','/appstock/app/minute/query?code='+mk+kcCode).catch(function(){ return jsonpGet('https://web.ifzq.gtimg.cn/','/appstock/app/minute/query?code='+mk+kcCode); }).then(function(d){
       var arr=null, pre=null; try{ arr=d.data[mk+kcCode].data.data; pre=+d.data[mk+kcCode].qt[mk+kcCode][4]; }catch(e){}
       if(!arr||!arr.length){ document.getElementById('kcInfo').textContent='分时数据暂缺'; return; }
-      var ca=0,cv2=0;
-      var pts=arr.map(function(x){ var f=x.split(' '); var v=+f[2]||0, amt=+f[3]||0; ca+=amt; cv2+=v; return {t:f[0], p:+f[1], a:cv2?ca/cv2/100:+f[1]}; });
+      var pts=arr.map(function(x){ var f=x.split(' '); return {t:f[0], p:+f[1], a:f[2]?+f[2]:+f[1]}; });
       var lo=Math.min(pre,Math.min.apply(null,pts.map(function(x){ return x.p; })));
       var hi=Math.max(pre,Math.max.apply(null,pts.map(function(x){ return x.p; })));
       var pad=(hi-lo)*0.12||0.01; lo-=pad; hi+=pad;
@@ -1074,7 +1147,7 @@ function drawKC(){
       document.getElementById('kcInfo').textContent='现价 '+last+' ('+(pct>0?'+':'')+pct.toFixed(2)+'%) | 昨收 '+pre+' | 白线:价格 黄线:均价 虚线:昨收';
     });
   }else{
-    fetchGet('https://web.ifzq.gtimg.cn','/appstock/app/fqkline/get?param='+mk+kcCode+',day,,,6,qfq').catch(function(){ return jsonpGet('https://web.ifzq.gtimg.cn','/appstock/app/fqkline/get?param='+mk+kcCode+',day,,,6,qfq'); }).then(function(d){
+    fetchGet('https://web.ifzq.gtimg.cn/','/appstock/app/fqkline/get?param='+mk+kcCode+',day,,,6,qfq').catch(function(){ return jsonpGet('https://web.ifzq.gtimg.cn/','/appstock/app/fqkline/get?param='+mk+kcCode+',day,,,6,qfq'); }).then(function(d){
       var arr=null; try{ arr=d.data[mk+kcCode].qfqday||d.data[mk+kcCode].day; }catch(e){}
       if(!arr||!arr.length){ document.getElementById('kcInfo').textContent='K线数据暂缺'; return; }
       arr=arr.slice(-5);
