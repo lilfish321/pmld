@@ -173,7 +173,7 @@
 .nrow{padding:8px 2px;border-bottom:1px dashed #232a3b;font-size:12.5px;line-height:1.55;color:#c9d1e8}
 .ntime{color:#66708a;font-size:10px;margin-right:6px;font-family:monospace}
 .ntag{color:#e3b341;font-size:10px;margin-right:4px;border:1px solid #3a3320;border-radius:3px;padding:0 3px}
-/* ===== V2.2 亮色主题+移动端 ===== */
+/* ===== V2.3 亮色主题+移动端 ===== */
 body.light{background:#eef1f6;color:#1a2233}
 body.light .hd h1{color:#1a2233}
 body.light .card,body.light table,body.light .secttl,body.light div{border-color:#d5dbe6}
@@ -190,7 +190,7 @@ body.light #kcInfo{color:#5a6478}
 }
 
 
-/* ===== V2.2 UI现代化覆盖层（追加式，仅覆盖不重写） ===== */
+/* ===== V2.3 UI现代化覆盖层（追加式，仅覆盖不重写） ===== */
 :root{
   --bg:#0d1017; --card:#151a24; --card2:#1a2130; --line:#212837;
   --txt:#e9ecf2; --txt2:#98a2b3; --txt3:#5f6b7f;
@@ -223,6 +223,14 @@ body.light .thermo .tg, body.light .idx .card, body.light .kings .k{ background:
 body.light .lrow, body.light .row, body.light .mrow{ border-bottom-color:#eef1f6; }
 body.light .lrow:hover, body.light .mrow:hover{ background:rgba(90,120,180,.08); }
 body.light .secttl b{ color:#c78a00; }
+
+/* ===== V2.3 快讯标红 ===== */
+.nrow.nred{ color:#ff8585; background:rgba(240,74,74,.07); border-left:2px solid #e05555; border-radius:0 8px 8px 0; padding-left:9px; margin-left:5px; }
+.nrow.nredS{ color:#ff5b5b; background:rgba(240,74,74,.12); font-weight:500; }
+.nrow.nred .ntime{ color:#c98a8a; }
+body.light .nrow.nred{ color:#c02626; background:rgba(224,85,85,.08); }
+body.light .nrow.nredS{ color:#a81d1d; background:rgba(224,85,85,.13); }
+body.light .nrow.nred .ntime{ color:#b06a6a; }
 </style>
 </head>
 <body>
@@ -785,31 +793,7 @@ function drawMy(codes,map){
 /* ---------- 连板统计（红绿榜/热榜） ---------- */
 var _pkOpen=null, _pkData=null, _pkT=0;
 
-var DIPMAP={'苏':'江苏','杭':'浙江','宁':'江苏','温':'浙江','粤':'广东','深':'广东','京':'北京','沪':'上海','鲁':'山东','川':'四川','皖':'安徽','闽':'福建','湘':'湖南','鄂':'湖北','豫':'河南','冀':'河北','陕':'陕西','甘':'甘肃','蒙':'内蒙','吉':'吉林','辽':'辽宁','津':'天津','渝':'重庆','琼':'海南','浙':'浙江','苏':'江苏','粤':'广东'};
-var PYMAP={金:'J',江:'J',九:'J',嘉:'J',锦:'J',晋:'J',晶:'J',景:'J',佳:'J',建:'J',吉:'J',记:'J',集:'J',基:'J',季:'J',济:'J',家:'J',加:'J',捷:'J',骏:'J',君:'J',均:'J',军:'J',进:'J',精:'J',聚:'J',坚:'J',剑:'J',居:'J',经:'J',杰:'J',巨:'J',炬:'J',洁:'J',久:'J',
-大:'D',东:'D',鼎:'D',达:'D',德:'D',迪:'D',帝:'D',丹:'D',电:'D',道:'D',多:'D',都:'D',洞:'D',栋:'D',岱:'D',戴:'D',董:'D',动:'D',
-龙:'L',联:'L',隆:'L',林:'L',立:'L',利:'L',力:'L',丽:'L',绿:'L',临:'L',鲁:'L',蓝:'L',朗:'L',乐:'L',雷:'L',良:'L',凌:'L',龄:'L',路:'L',
-新:'X',信:'X',兴:'X',星:'X',西:'X',祥:'X',翔:'X',湘:'X',雪:'X',先:'X',霞:'X',欣:'X',协:'X',芯:'X',晓:'X',旭:'X',轩:'X',雄:'X',向:'X',象:'X',宣:'X',训:'X',迅:'X',心:'X',
-中:'Z',正:'Z',智:'Z',州:'Z',浙:'Z',振:'Z',植:'Z',众:'Z',卓:'Z',紫:'Z',资:'Z',宗:'Z',棕:'Z',足:'Z',尊:'Z',展:'Z',志:'Z',致:'Z',真:'Z',臻:'Z',征:'Z',政:'Z',
-华:'H',海:'H',恒:'H',汇:'H',宏:'H',红:'H',虹:'H',汉:'H',昊:'H',杭:'H',鸿:'H',花:'H',环:'H',和:'H',合:'H',亨:'H',辉:'H',徽:'H',厚:'H',禾:'H',琥:'H',
-天:'T',同:'T',太:'T',泰:'T',通:'T',腾:'T',唐:'T',拓:'T',特:'T',田:'T',图:'T',涛:'T',铁:'T',
-三:'S',山:'S',双:'S',世:'S',盛:'S',顺:'S',上:'S',深:'S',升:'S',时:'S',士:'S',思:'S',斯:'S',松:'S',尚:'S',申:'S',神:'S',生:'S',圣:'S',帅:'S',
-万:'W',威:'W',沃:'W',文:'W',望:'W',维:'W',网:'W',皖:'W',伟:'W',韦:'W',温:'W',
-宇:'Y',裕:'Y',云:'Y',亿:'Y',源:'Y',越:'Y',永:'Y',英:'Y',优:'Y',扬:'Y',洋:'Y',亚:'Y',阳:'Y',银:'Y',远:'Y',豫:'Y',粤:'Y',益:'Y',以:'Y',易:'Y',意:'Y',宜:'Y',燕:'Y',延:'Y',盐:'Y',研:'Y',颜:'Y',岩:'Y',沿:'Y',雁:'Y',焱:'Y',耀:'Y',药:'Y',野:'Y',一:'Y',依:'Y',伊:'Y',颐:'Y',
-国:'G',光:'G',广:'G',冠:'G',工:'G',高:'G',格:'G',谷:'G',贵:'G',钢:'G',刚:'G',纲:'G',
-长:'C',晨:'C',创:'C',成:'C',川:'C',昌:'C',程:'C',春:'C',超:'C',驰:'C',慈:'C',楚:'C',常:'C',朝:'C',辰:'C',诚:'C',城:'C',承:'C',传:'C',
-瑞:'R',日:'R',融:'R',荣:'R',润:'R',仁:'R',任:'R',
-美:'M',民:'M',名:'M',明:'M',迈:'M',蒙:'M',马:'M',麦:'M',茂:'M',梅:'M',梦:'M',米:'M',闽:'M',摩:'M',木:'M',慕:'M',
-丰:'F',发:'F',福:'F',方:'F',峰:'F',风:'F',飞:'F',富:'F',凡:'F',法:'F',范:'F',菲:'F',
-宝:'B',百:'B',北:'B',邦:'B',滨:'B',博:'B',贝:'B',步:'B',白:'B',柏:'B',班:'B',包:'B',保:'B',碧:'B',
-奇:'Q',启:'Q',千:'Q',青:'Q',群:'Q',强:'Q',齐:'Q',全:'Q',前:'Q',侨:'Q',秦:'Q',琴:'Q',轻:'Q',庆:'Q',
-凯:'K',科:'K',开:'K',康:'K',坤:'K',昆:'K',凯:'K',可:'K',口:'K',
-安:'A',奥:'A',爱:'A',傲:'A',敖:'A',
-尔:'E',恩:'E',
-南:'N',能:'N',牛:'N',尼:'N',
-鹏:'P',平:'P',品:'P',普:'P',派:'P',澎:'P',
-软:'R',若:'R',
-}; 
+ 
 var _pkDT=null, _pkPrev=null;
 function renderHot(zt, dt, prev){
   var el=document.getElementById('pkHot'); if(!el) return;
@@ -892,7 +876,7 @@ function ensureAmp(pool, cb){
     })).then(function(){ done++; if(done===batches.length){ try{ localStorage.setItem('mfx_amp_'+today(), JSON.stringify(cache)); }catch(e){} if(cb) cb(true); } });
   });
 }
-/* ---------- V2.2 涨停哨兵：炸板/封单衰减/回封监控 ---------- */
+/* ---------- V2.3 涨停哨兵：炸板/封单衰减/回封监控 ---------- */
 var _senCfg={on:false};
 try{ _senCfg=JSON.parse(localStorage.getItem('mfx_sentinel')||'{"on":false}'); }catch(e){}
 var _senPeak={}, _senFired={}, _senLog=[];
@@ -1032,10 +1016,16 @@ function renderNews(list){
   var box=document.getElementById('newsBox'); if(!box) return;
   if(!list||!list.length){ box.innerHTML='<div class="empty">—</div>'; return; }
   var h='';
+  var _kw=['突发','重磅','紧急','降准','降息','印花税','平准基金','政治局','国常会','中美元首','反制','互征关税','熔断','集体诉讼','国务院常务'];
   for(var i=0;i<list.length&&i<40;i++){
     var it=list[i]||{}, tags=it.tag||[], tn='';
     for(var j=0;j<tags.length;j++){ var nm=tags[j]&&tags[j].name; if(nm&&nm!=='其他') tn+='<span class="ntag">'+_esc(nm)+'</span>'; }
-    h+='<div class="nrow"><span class="ntime">'+_esc(String(it.create_time||'').slice(5,16))+'</span>'+tn+_esc(it.rich_text||'')+'</div>';
+    var rt=String(it.rich_text||'');
+    var isF=(+it.is_focus===1);              /* 新浪官方标红位 */
+    var isK=!isF&&_kw.some(function(k){ return rt.indexOf(k)>=0; });  /* 本地关键词 */
+    var cls=isF?' nred nredS':(isK?' nred':'');
+    var star=isF?'<span style="color:#ff5b5b">🔴</span> ':'';
+    h+='<div class="nrow'+cls+'">'+star+'<span class="ntime">'+_esc(String(it.create_time||'').slice(5,16))+'</span>'+tn+_esc(rt)+'</div>';
   }
   box.innerHTML=h;
   var st=document.getElementById('newsState'); if(st) st.textContent='🟢 新浪财经 · 7×24 · 更新 '+String((list[0]&&list[0].create_time)||'').slice(11,16);
@@ -1067,7 +1057,7 @@ function swPage(n){
 loadCurrent();loadNews();
 setInterval(loadCurrent,30000);
 document.addEventListener('visibilitychange',function(){ if(!document.hidden){ loadCurrent(); loadNews(); } });
-/* ===== V2.2 涨停池/分时K线小窗/自选预警/CSV/主题 ===== */
+/* ===== V2.3 涨停池/分时K线小窗/自选预警/CSV/主题 ===== */
 var ztCache=[], ztFilter=0, _ztT=0;
 function getZtPool(cb){
   tryFetchEX('/getTopicZTPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=320&sort=fbt%3Aasc&date='+today()).then(function(d){
@@ -1121,7 +1111,7 @@ function expMyCsv(){
 /* ---- K线小窗 ---- */
 var kcCode='', kcName='', kcSeg='m';
 function showK(code,name){
-  kcCode=String(code).replace(/^((sh|sz|bj)?0*)/,'').slice(-6); kcName=name||''; kcSeg='m';
+  var _m2=String(code).match(/(\d{6})\s*$/); kcCode=_m2?_m2[1]:String(code).replace(/\D/g,'').slice(-6); kcName=name||''; kcSeg='m';
   document.getElementById('kchart').style.display='';
   document.getElementById('kcTitle').textContent=kcName+' '+kcCode;
   drawKC();
@@ -1129,7 +1119,7 @@ function showK(code,name){
 function closeK(e){ document.getElementById('kchart').style.display='none'; }
 function drawKC(){
   var sid=secidOf(kcCode); if(!sid) return;
-  var mk=sid.charAt(0), cv=document.getElementById('kcCanvas'), ctx=cv.getContext('2d');
+  var c0=+kcCode.charAt(0), mk=(c0===6||c0===9)?'sh':((c0===4||c0===8)?'bj':'sz'), cv=document.getElementById('kcCanvas'), ctx=cv.getContext('2d');
   ctx.fillStyle='#0e1117'; ctx.fillRect(0,0,cv.width,cv.height);
   if(kcSeg==='m'){
     fetchGet('https://web.ifzq.gtimg.cn/','/appstock/app/minute/query?code='+mk+kcCode).catch(function(){ return jsonpGet('https://web.ifzq.gtimg.cn/','/appstock/app/minute/query?code='+mk+kcCode); }).then(function(d){
