@@ -1031,21 +1031,41 @@ function renderNews(list){
   var st=document.getElementById('newsState'); if(st) st.textContent='🟢 新浪财经 · 7×24 · 更新 '+String((list[0]&&list[0].create_time)||'').slice(11,16);
 }
 function loadNews(){
-  var seq=++_newsSeq, cb='mfxNews'+seq;
-  window[cb]=function(d){
-    try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
+  /* V2.6 同花顺新闻主源(CORS开放, 个股关联自带) + 新浪JSONP备源 */
+  var seq=++_newsSeq;
+  fetch('https://news.10jqka.com.cn/tapp/news/push/stock/?page=1&tag=&track=website&pagesize=40',
+    {headers:{'Referer':'https://news.10jqka.com.cn/'}}).then(function(r){ return r.json(); }).then(function(j){
     if(seq!==_newsSeq) return;
-    var list=null;
-    try{ list=d.result.data.feed.list; }catch(e){}
-    renderNews(list);
-  };
-  var old=document.getElementById('newsJP'); if(old&&old.parentNode) old.parentNode.removeChild(old);
-  var s=document.createElement('script'); s.id='newsJP';
-  s.src='https://zhibo.sina.com.cn/api/zhibo/feed?callback='+cb+'&page=1&page_size=40&zhibo_id=152&_='+Date.now();
-  s.onerror=function(){ var st=document.getElementById('newsState'); if(st) st.textContent='🟡 快讯源暂不可达（60秒后重试）';
-    if(!window._newsRetry) window._newsRetry=0;
-    if(window._newsRetry<5){ window._newsRetry++; setTimeout(function(){ try{loadNews();}catch(e){} }, 60000); } };
-  document.body.appendChild(s);
+    var lst=((j||{}).data||{}).list||[];
+    if(lst.length){ renderNews(_normThs(lst)); return; }
+    throw new Error('empty');
+  }).catch(function(){
+    var cb='mfxNews'+seq;
+    window[cb]=function(d){
+      try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
+      if(seq!==_newsSeq) return;
+      var list=null;
+      try{ list=d.result.data.feed.list; }catch(e){}
+      renderNews(list);
+    };
+    var old=document.getElementById('newsJP'); if(old&&old.parentNode) old.parentNode.removeChild(old);
+    var s=document.createElement('script'); s.id='newsJP';
+    s.src='https://zhibo.sina.com.cn/api/zhibo/feed?callback='+cb+'&page=1&page_size=40&zhibo_id=152&_='+Date.now();
+    s.onerror=function(){ var st=document.getElementById('newsState'); if(st) st.textContent='🟡 快讯双源均不可达（60秒后重试）';
+      if(!window._newsRetry) window._newsRetry=0;
+      if(window._newsRetry<5){ window._newsRetry++; setTimeout(function(){ try{loadNews();}catch(e){} }, 60000); } };
+    document.body.appendChild(s);
+  });
+}
+/* V2.6 同花顺→新浪形归一化(renderNews零改动): stock_list转tag金色个股标 */
+function _normThs(lst){
+  return lst.map(function(x){
+    var ct=x.ctime?new Date(+x.ctime*1000):new Date();
+    var mm=('0'+(ct.getMonth()+1)).slice(-2)+'-'+('0'+ct.getDate()).slice(-2)+' '+('0'+ct.getHours()).slice(-2)+':'+('0'+ct.getMinutes()).slice(-2);
+    var tags=((x.stock_list)||[]).map(function(s){ return {name:'$'+(s.stock_name||'')}; }).filter(function(t){return t.name.length>1;});
+    var imp=/重磅|突发|紧急|重要/.test(x.title||'');
+    return {rich_text:(x.digest||x.title||''), create_time:mm, tag:tags, is_focus:imp?1:0, _src:'ths', _title:x.title||''};
+  });
 }
 setInterval(function(){ if(!document.hidden) loadNews(); }, 60000);
 function swPage(n){
@@ -1144,14 +1164,25 @@ function genReview(){
   }).catch(function(){ return []; });
   var p2=Promise.resolve(ztCache||[]);
   var p3=_dtPool('DT'), p4=_dtPool('ZB');
+  /* V2.6 盘中重要消息(同花顺全天翻3页) */
+  var p6=(function(){ var pages=[1,2,3].map(function(p){
+      return fetch('https://news.10jqka.com.cn/tapp/news/push/stock/?page='+p+'&tag=&track=website&pagesize=40',{headers:{'Referer':'https://news.10jqka.com.cn/'}}).then(function(r){ return r.json(); }).then(function(j){ return ((j||{}).data||{}).list||[]; }).catch(function(){ return []; }); });
+    return Promise.all(pages).then(function(arrs){ var all=[]; arrs.forEach(function(a){ all=all.concat(a); }); return all; }); })();
+  /* V2.6 全市场振幅/成交额榜 */
+  var p8=tryFetch('/api/qt/clist/get?pn=1&pz=6&po=1&np=1&fltt=2&invt=2&ut=bd1d9ddb04089700cf9c27f6f7426281&fid=f7&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23&fields=f2,f3,f7,f12,f14').then(function(d){ return (d.data&&d.data.diff)||[]; }).catch(function(){ return []; });
+  /* V2.6 昨日连板池(生态温度) */
+  var p7=(function(){ var yd=new Date(Date.now()-86400000);
+    while([0,6].indexOf(yd.getDay())>=0) yd=new Date(+yd-86400000);
+    var ymd=yd.getFullYear()+('0'+(yd.getMonth()+1)).slice(-2)+('0'+yd.getDate()).slice(-2);
+    return tryFetchEX('/getTopicZTPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=300&sort=fbt%3Aasc&date='+ymd).then(function(d){ return ((d.data&&d.data.pool)||[]).filter(function(o){ return (o.lbc||1)>=2; }); }).catch(function(){ return []; }); })();
   var p5=(function(){ var codes=getMy(); if(!codes.length) return Promise.resolve([]);
     var c=codes.map(secidOf).filter(Boolean).join(',');
     if(!c) return Promise.resolve([]);
     return tryFetch('/api/qt/ulist.np/get?fltt=2&invt=2&ut=bd1d9ddb04089700cf9c27f6f7426281&secids='+c+'&fields=f2,f3,f12,f14').then(function(d){
       return ((d.data&&d.data.diff)||[]).map(function(o){ return {n:o.f14, pct:+o.f3}; }); });
   })();
-  Promise.all([p1,p2,p3,p4,p5]).then(function(rs){
-    var idx=rs[0], zt=rs[1], dt=rs[2], zb=rs[3], my=rs[4];
+  Promise.all([p1,p2,p3,p4,p5,p6,p7,p8]).then(function(rs){
+    var idx=rs[0], zt=rs[1], dt=rs[2], zb=rs[3], my=rs[4], newsAll=rs[5], ydLb=rs[6], amp=rs[7];
     var L=[];
     L.push('📋 '+today().slice(0,4)+'-'+today().slice(4,6)+'-'+today().slice(6,8)+' 收盘数据速览');
     L.push('');
@@ -1182,6 +1213,53 @@ function genReview(){
     /* ⑦ 自选表现 */
     if(my.length){ L.push(''); L.push('【自选当日】'+my.map(function(o){return o.n+' '+(o.pct>0?'+':'')+o.pct.toFixed(2)+'%';}).join(' · ')); }
     L.push('');
+    /* V2.6 涨停时间分布(抢筹/盘中/尾盘) */
+    if(zt.length){
+      var t1=0,t2=0,t3=0;
+      zt.forEach(function(o){ var f=+o.fbt||0; if(f&&f<=100000) t1++; else if(f&&f<=133000) t2++; else t3++; });
+      L.push('');
+      L.push('【涨停时间分布】开盘抢筹(≤10:00)'+t1+' · 盘中'+t2+' · 午后/尾盘'+t3);
+    }
+    /* V2.6 生态温度: 昨日连板今日表现+晋级率 */
+    if(ydLb.length){
+      var up=0, dn=0, promoted=0, det=[];
+      ydLb.forEach(function(o){
+        var name=o.n||o.n_, code=o.c||'';
+        var hit=zt.filter(function(z){ return z.c===code; });
+        if(hit.length){ promoted++; det.push(name+'→'+(o.lbc||1)+1+'板✓'); }
+      });
+      var succ = promoted; var total = ydLb.length;
+      L.push('');
+      L.push('【生态温度】昨日连板'+total+'只 → 今日晋级'+succ+'只(晋级率'+(total?(succ/total*100).toFixed(0):0)+'%)');
+      if(det.length) L.push('  晋级: '+det.slice(0,6).join(' · '));
+    }
+    /* V2.6 全市场振幅榜(日内波动) */
+    if(amp.length){
+      L.push('');
+      L.push('【全市场振幅Top】'+amp.map(function(o){ return (o.f14||'')+' '+(o.f7||0)+'%'; }).join(' · '));
+    }
+    /* V2.6 盘中重要消息×个股(同花顺筛重要级, 个股与涨停池交叉) */
+    if(newsAll.length){
+      var IMP=/重磅|突发|紧急|important/i;
+      var msg=[]; var seen={};
+      newsAll.forEach(function(x){
+        var t=x.title||'', dg=x.digest||'';
+        if(!IMP.test(t)) return;
+        var stks=((x.stock_list)||[]).map(function(s){ return s.stock_name; }).filter(Boolean);
+        var cross=stks.filter(function(sn){ return zt.some(function(z){ return (z.n||'')===sn; }); });
+        var key=t.slice(0,20); if(seen[key]) return; seen[key]=1;
+        msg.push({t:t, stks:stks, cross:cross});
+      });
+      if(msg.length){
+        L.push('');
+        L.push('【盘中重要消息】');
+        msg.slice(0,6).forEach(function(m){
+          L.push('  ▸ '+m.t.slice(0,42));
+          if(m.cross.length) L.push('    ↳关联涨停: '+m.cross.join('、'));
+          else if(m.stks.length) L.push('    ↳提及: '+m.stks.slice(0,4).join('、'));
+        });
+      }
+    }
     L.push('—— 数据型复盘(公开行情聚合) · 旺仔版生成 · 不构成投资建议 ——');
     var txt=L.join('\n');
     _revCache.txt=txt;
