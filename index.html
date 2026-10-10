@@ -1135,25 +1135,29 @@ function _dtPool(type){ /* type: DT=跌停 ZB=炸板 */
 }
 function genReview(){
   var btn=document.getElementById('revBtn'); if(btn){btn.disabled=true; btn.textContent='⏳ 生成中…';}
-  var idxCodes='sh000001,sz399001,sz399006,sh000016';
-  var p1=fetchGet('https://qt.gtimg.cn/','/q='+idxCodes).catch(function(){ return jsonpGet('https://qt.gtimg.cn/','/q='+idxCodes); });
+  /* V2.5b 修正: 指数+自选统一走东财ulist(tryFetch, CORS稳), 废弃qt.gtimg坏模式 */
+  var IDX_SEC='1.000001,0.399001,0.399006,1.000016';
+  var inames=['上证指数','深证成指','创业板指','上证50'];
+  var p1=tryFetch('/api/qt/ulist.np/get?fltt=2&invt=2&ut=bd1d9ddb04089700cf9c27f6f7426281&secids='+IDX_SEC+'&fields=f2,f3,f12,f14').then(function(d){
+    var arr=(d.data&&d.data.diff)||[];
+    return arr.map(function(o,i){ return inames[i]+' '+o.f2+' ('+(o.f3>0?'+':'')+o.f3+'%)'; });
+  }).catch(function(){ return []; });
   var p2=Promise.resolve(ztCache||[]);
   var p3=_dtPool('DT'), p4=_dtPool('ZB');
   var p5=(function(){ var codes=getMy(); if(!codes.length) return Promise.resolve([]);
-    var c=codes.map(function(s){ return secidOf(s).replace('.',''); }).join(',');
-    return fetchGet('https://qt.gtimg.cn/','/q='+c).catch(function(){ return jsonpGet('https://qt.gtimg.cn/','/q='+c); }).then(function(t){
-      var out=[]; String(t).split(';').forEach(function(seg){ var v=seg.split('"')[1]; if(!v)return; var f=v.split('~');
-        var pct=((+f[3]-+f[4])/+f[4]*100); out.push({n:f[1], pct:pct}); }); return out; }); })();
+    var c=codes.map(secidOf).filter(Boolean).join(',');
+    if(!c) return Promise.resolve([]);
+    return tryFetch('/api/qt/ulist.np/get?fltt=2&invt=2&ut=bd1d9ddb04089700cf9c27f6f7426281&secids='+c+'&fields=f2,f3,f12,f14').then(function(d){
+      return ((d.data&&d.data.diff)||[]).map(function(o){ return {n:o.f14, pct:+o.f3}; }); });
+  })();
   Promise.all([p1,p2,p3,p4,p5]).then(function(rs){
     var idx=rs[0], zt=rs[1], dt=rs[2], zb=rs[3], my=rs[4];
     var L=[];
     L.push('📋 '+today().slice(0,4)+'-'+today().slice(4,6)+'-'+today().slice(6,8)+' 收盘数据速览');
     L.push('');
     /* ① 指数 */
-    var inames=['上证指数','深证成指','创业板指','上证50'];
     L.push('【指数】');
-    String(idx).split(';').forEach(function(seg,i){ var v=seg.split('"')[1]; if(!v)return; var f=v.split('~');
-      L.push('  '+inames[i]+' '+(+f[3]).toFixed(2)+' ('+(f[32]>0?'+':'')+f[32]+'%)'); });
+    idx.forEach(function(s){ L.push('  '+s); });
     /* ② 涨跌停 */
     var zbRate=zt.length?(zb.length/(zt.length+zb.length)*100).toFixed(1):'0';
     L.push('');
