@@ -23,7 +23,7 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍼</text></svg>">
-<title>🍼 盘面雷达 🍼 旺仔专用版 🍼</title>
+<link rel="manifest" href='data:application/manifest+json,{%22name%22:%22\u65fa\u4ed4\u770b\u76d8%22,%22short_name%22:%22\u65fa\u4ed4\u770b\u76d8%22,%22start_url%22:%22./%22,%22display%22:%22standalone%22,%22background_color%22:%22#0c0f14%22,%22theme_color%22:%22#0c0f14%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230c0f14'/%3E%3Ctext x='50' y='72' font-size='58' text-anchor='middle'%3E%F0%9F%8D%BC%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22any%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any maskable%22}]}'><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#0c0f14"><title>🍼 盘面雷达 🍼 旺仔专用版 🍼</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { background:#0e1117; color:#e8e8e8; font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; font-size:14px; padding-bottom:70px; }
@@ -173,7 +173,7 @@
 .nrow{padding:8px 2px;border-bottom:1px dashed #232a3b;font-size:12.5px;line-height:1.55;color:#c9d1e8}
 .ntime{color:#66708a;font-size:10px;margin-right:6px;font-family:monospace}
 .ntag{color:#e3b341;font-size:10px;margin-right:4px;border:1px solid #3a3320;border-radius:3px;padding:0 3px}
-/* ===== V2.3 亮色主题+移动端 ===== */
+/* ===== V2.4 亮色主题+移动端 ===== */
 body.light{background:#eef1f6;color:#1a2233}
 body.light .hd h1{color:#1a2233}
 body.light .card,body.light table,body.light .secttl,body.light div{border-color:#d5dbe6}
@@ -190,7 +190,7 @@ body.light #kcInfo{color:#5a6478}
 }
 
 
-/* ===== V2.3 UI现代化覆盖层（追加式，仅覆盖不重写） ===== */
+/* ===== V2.4 UI现代化覆盖层（追加式，仅覆盖不重写） ===== */
 :root{
   --bg:#0d1017; --card:#151a24; --card2:#1a2130; --line:#212837;
   --txt:#e9ecf2; --txt2:#98a2b3; --txt3:#5f6b7f;
@@ -224,7 +224,7 @@ body.light .lrow, body.light .row, body.light .mrow{ border-bottom-color:#eef1f6
 body.light .lrow:hover, body.light .mrow:hover{ background:rgba(90,120,180,.08); }
 body.light .secttl b{ color:#c78a00; }
 
-/* ===== V2.3 快讯标红 ===== */
+/* ===== V2.4 快讯标红 ===== */
 .nrow.nred{ color:#ff8585; background:rgba(240,74,74,.07); border-left:2px solid #e05555; border-radius:0 8px 8px 0; padding-left:9px; margin-left:5px; }
 .nrow.nredS{ color:#ff5b5b; background:rgba(240,74,74,.12); font-weight:500; }
 .nrow.nred .ntime{ color:#c98a8a; }
@@ -264,7 +264,7 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
       <button onclick="ztFilter=0;renderZtPool()" id="zf0" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">全部</button>
       <button onclick="ztFilter=2;renderZtPool()" id="zf2" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">连板</button>
       <button onclick="ztFilter=1;renderZtPool()" id="zf1" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">首板</button>
-      <button onclick="expZtCsv()" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">⬇CSV</button>
+      <button onclick="expZtCsv()" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">⬇CSV</button><button onclick="genReview()" id="revBtn" style="background:#171c26;border:1px solid #2a3142;color:#e3b341;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">📋 一键复盘</button>
     </div>
   </div>
   <div id="ztPoolBox" style="padding:6px 10px"><div class="empty">加载中…</div></div>
@@ -876,7 +876,7 @@ function ensureAmp(pool, cb){
     })).then(function(){ done++; if(done===batches.length){ try{ localStorage.setItem('mfx_amp_'+today(), JSON.stringify(cache)); }catch(e){} if(cb) cb(true); } });
   });
 }
-/* ---------- V2.3 涨停哨兵：炸板/封单衰减/回封监控 ---------- */
+/* ---------- V2.4 涨停哨兵：炸板/封单衰减/回封监控 ---------- */
 var _senCfg={on:false};
 try{ _senCfg=JSON.parse(localStorage.getItem('mfx_sentinel')||'{"on":false}'); }catch(e){}
 var _senPeak={}, _senFired={}, _senLog=[];
@@ -1042,7 +1042,9 @@ function loadNews(){
   var old=document.getElementById('newsJP'); if(old&&old.parentNode) old.parentNode.removeChild(old);
   var s=document.createElement('script'); s.id='newsJP';
   s.src='https://zhibo.sina.com.cn/api/zhibo/feed?callback='+cb+'&page=1&page_size=40&zhibo_id=152&_='+Date.now();
-  s.onerror=function(){ var st=document.getElementById('newsState'); if(st) st.textContent='🟡 快讯源暂不可达（60秒后重试）'; };
+  s.onerror=function(){ var st=document.getElementById('newsState'); if(st) st.textContent='🟡 快讯源暂不可达（60秒后重试）';
+    if(!window._newsRetry) window._newsRetry=0;
+    if(window._newsRetry<5){ window._newsRetry++; setTimeout(function(){ try{loadNews();}catch(e){} }, 60000); } };
   document.body.appendChild(s);
 }
 setInterval(function(){ if(!document.hidden) loadNews(); }, 60000);
@@ -1057,7 +1059,7 @@ function swPage(n){
 loadCurrent();loadNews();
 setInterval(loadCurrent,30000);
 document.addEventListener('visibilitychange',function(){ if(!document.hidden){ loadCurrent(); loadNews(); } });
-/* ===== V2.3 涨停池/分时K线小窗/自选预警/CSV/主题 ===== */
+/* ===== V2.4 涨停池/分时K线小窗/自选预警/CSV/主题 ===== */
 var ztCache=[], ztFilter=0, _ztT=0;
 function getZtPool(cb){
   tryFetchEX('/getTopicZTPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=320&sort=fbt%3Aasc&date='+today()).then(function(d){
@@ -1071,6 +1073,7 @@ function loadZtPool(){
 }
 function _fz(v){ return (v/1e8).toFixed(2); }
 function _ft(v){ v=String(v); while(v.length<6) v='0'+v; return v.slice(0,2)+':'+v.slice(2,4)+':'+v.slice(4,6); }
+var ztSort='', ztSortAsc=false; /* V2.5 列头排序状态 */
 function renderZtPool(){
   var box=document.getElementById('ztPoolBox'); if(!box) return;
   var list=ztCache||[];
@@ -1078,8 +1081,23 @@ function renderZtPool(){
   ['zf0','zf1','zf2'].forEach(function(id){ var el=document.getElementById(id); if(el) el.style.color = id==='zf'+ztFilter?'#e3b341':'#8892a8'; });
   if(ztFilter===1) list=list.filter(function(o){ return o.lbc===1; });
   if(ztFilter===2) list=list.filter(function(o){ return o.lbc>=2; });
-  list=list.slice().sort(function(a,b){ return b.lbc-a.lbc || b.fund-a.fund; });
-  var h='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="color:#66708a;text-align:left"><th style="padding:4px">名称</th><th>代码</th><th>板</th><th>封单(亿)</th><th>开</th><th>首封</th><th>板块</th></tr>';
+  var _sk=(typeof ztSort==='undefined')?'':ztSort, _sa=(typeof ztSortAsc==='undefined')?false:ztSortAsc;
+  list=list.slice().sort(function(a,b){
+    if(_sk==='fund') return (_sa?(a.fund||0)-(b.fund||0):(b.fund||0)-(a.fund||0)) || b.lbc-a.lbc;
+    if(_sk==='fbt') return (_sa?(a.fbt||0)-(b.fbt||0):(b.fbt||0)-(a.fbt||0)) || b.lbc-a.lbc;
+    return b.lbc-a.lbc || b.fund-a.fund;
+  });
+  /* V2.5 梯队条: 连板分层统计(公开信息结构化) */
+  var t2=0,t3=0,t4=0,hiN=0,hiName='—';
+  (ztCache||[]).forEach(function(o){ var lb=o.lbc||1; if(lb>=4){t4++;} else if(lb===3){t3++;} else if(lb===2){t2++;} if(lb>hiN||(lb===hiN&&hiName==='—')){if(lb>=2){hiN=lb;hiName=o.n||'';}} });
+  var tierH='<div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 6px;font-size:11px">'
+    +'<span style="background:#141a26;border:1px solid #2a3142;border-radius:6px;padding:2px 8px;color:#8892a8">2板 <b style="color:#c8d0e0">'+t2+'</b></span>'
+    +'<span style="background:#141a26;border:1px solid #2a3142;border-radius:6px;padding:2px 8px;color:#8892a8">3板 <b style="color:#c8d0e0">'+t3+'</b></span>'
+    +'<span style="background:#141a26;border:1px solid #2a3142;border-radius:6px;padding:2px 8px;color:#8892a8">4板+ <b style="color:#c8d0e0">'+t4+'</b></span>'
+    +'<span style="background:#1a1626;border:1px solid #3a2f4a;border-radius:6px;padding:2px 8px;color:#d9a6ff">高度 <b>'+hiN+'板 '+hiName+'</b></span></div>';
+  /* V2.5 列头点击排序 */
+  var thS=function(k,label){ var on=ztSort===k; return '<th onclick="ztSort=\''+k+'\';ztSortAsc=(typeof ztSortAsc===\'undefined\'?false:!ztSortAsc);renderZtPool()" style="padding:4px;cursor:pointer;'+(on?'color:#e3b341':'')+'">'+label+(on?(ztSortAsc?'↑':'↓'):'')+'</th>'; };
+  var h=tierH+'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="color:#66708a;text-align:left"><th style="padding:4px">名称</th><th>代码</th>'+thS('lbc','板')+thS('fund','封单(亿)')+'<th>开</th>'+thS('fbt','首封')+'<th>板块</th></tr>';
   list.forEach(function(o){
     var nm=o.n||'', cd=o.c||'';
     h+='<tr style="border-top:1px solid #1c2230"><td style="padding:5px 4px"><span style="cursor:pointer;color:'+(o.lbc>=3?'#e3b341':'#4da3ff')+'" onclick="showK(\''+cd+'\',\''+nm+'\')">'+nm+'</span></td><td style="color:#66708a">'+cd+'</td><td>'+(o.lbc||1)+'</td><td>'+(o.fund?_fz(o.fund):'—')+'</td><td>'+(o.zbc||0)+'</td><td style="color:#66708a">'+(o.fbt?_ft(o.fbt):'—')+'</td><td style="color:#8a93a6;font-size:11px">'+_esc(o.hybk||'')+'</td></tr>';
@@ -1108,6 +1126,87 @@ function expMyCsv(){
     _dlCsv('自选股_'+today()+'.csv', rows);
   });
 }
+
+/* ===== V2.5 一键复盘(数据型·公开信息聚合, 不含任何观点/框架) ===== */
+var _revCache={};
+function _dtPool(type){ /* type: DT=跌停 ZB=炸板 */
+  var api = type==='DT'?'/getTopicDTPool':'/getTopicZBPool';
+  return tryFetchEX(api+'?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=300&date='+today()).then(function(d){ return (d.data&&d.data.pool)||[]; }).catch(function(){ return []; });
+}
+function genReview(){
+  var btn=document.getElementById('revBtn'); if(btn){btn.disabled=true; btn.textContent='⏳ 生成中…';}
+  var idxCodes='sh000001,sz399001,sz399006,sh000016';
+  var p1=fetchGet('https://qt.gtimg.cn/','/q='+idxCodes).catch(function(){ return jsonpGet('https://qt.gtimg.cn/','/q='+idxCodes); });
+  var p2=Promise.resolve(ztCache||[]);
+  var p3=_dtPool('DT'), p4=_dtPool('ZB');
+  var p5=(function(){ var codes=getMy(); if(!codes.length) return Promise.resolve([]);
+    var c=codes.map(function(s){ return secidOf(s).replace('.',''); }).join(',');
+    return fetchGet('https://qt.gtimg.cn/','/q='+c).catch(function(){ return jsonpGet('https://qt.gtimg.cn/','/q='+c); }).then(function(t){
+      var out=[]; String(t).split(';').forEach(function(seg){ var v=seg.split('"')[1]; if(!v)return; var f=v.split('~');
+        var pct=((+f[3]-+f[4])/+f[4]*100); out.push({n:f[1], pct:pct}); }); return out; }); })();
+  Promise.all([p1,p2,p3,p4,p5]).then(function(rs){
+    var idx=rs[0], zt=rs[1], dt=rs[2], zb=rs[3], my=rs[4];
+    var L=[];
+    L.push('📋 '+today().slice(0,4)+'-'+today().slice(4,6)+'-'+today().slice(6,8)+' 收盘数据速览');
+    L.push('');
+    /* ① 指数 */
+    var inames=['上证指数','深证成指','创业板指','上证50'];
+    L.push('【指数】');
+    String(idx).split(';').forEach(function(seg,i){ var v=seg.split('"')[1]; if(!v)return; var f=v.split('~');
+      L.push('  '+inames[i]+' '+(+f[3]).toFixed(2)+' ('+(f[32]>0?'+':'')+f[32]+'%)'); });
+    /* ② 涨跌停 */
+    var zbRate=zt.length?(zb.length/(zt.length+zb.length)*100).toFixed(1):'0';
+    L.push('');
+    L.push('【涨跌停】涨停'+zt.length+'只 · 跌停'+dt.length+'只 · 炸板'+zb.length+'只(炸板率'+zbRate+'%)');
+    var lb2=zt.filter(function(o){return (o.lbc||1)===2;}), lb3=zt.filter(function(o){return (o.lbc||1)>=3;});
+    L.push('  首板'+(zt.length-lb2.length-lb3.length)+' · 2板'+lb2.length+' · 3板+'+lb3.length);
+    /* ③ 梯队 */
+    if(lb3.length){ L.push('');
+      L.push('【连板梯队】');
+      lb3.slice().sort(function(a,b){return b.lbc-a.lbc;}).forEach(function(o){ L.push('  '+(o.lbc)+'板 '+(o.n||'')+'('+o.c+') 封单'+(o.fund?_fz(o.fund):'—')+(o.zbc?' 开'+o.zbc:'')); }); }
+    /* ④ 封单王/开板王 */
+    var ftop=zt.slice().sort(function(a,b){return (b.fund||0)-(a.fund||0);}).slice(0,5);
+    var ztop=zt.slice().sort(function(a,b){return (b.zbc||0)-(a.zbc||0);}).slice(0,5).filter(function(o){return (o.zbc||0)>0;});
+    if(ftop.length){ L.push(''); L.push('【封单额Top5】'+ftop.map(function(o){return (o.n||'')+((o.fund||0)/1e8).toFixed(1)+'亿';}).join(' · ')); }
+    if(ztop.length){ L.push('【反复开板Top5】'+ztop.map(function(o){return (o.n||'')+o.zbc+'次';}).join(' · ')); }
+    /* ⑤ 行业分布 */
+    var hy={}; zt.forEach(function(o){ var k=(o.hybk||'').replace(/\s/g,'').slice(0,6); if(k) hy[k]=(hy[k]||0)+1; });
+    var hyT=Object.keys(hy).map(function(k){return [k,hy[k]];}).sort(function(a,b){return b[1]-a[1];}).slice(0,6);
+    if(hyT.length){ L.push(''); L.push('【行业分布Top】'+hyT.map(function(x){return x[0]+x[1]+'只';}).join(' · ')); }
+    /* ⑥ 跌停 */
+    if(dt.length){ L.push(''); L.push('【跌停】'+dt.slice(0,8).map(function(o){return (o.n||'')+'('+o.c+')';}).join(' · ')+(dt.length>8?' 等'+dt.length+'只':'')); }
+    /* ⑦ 自选表现 */
+    if(my.length){ L.push(''); L.push('【自选当日】'+my.map(function(o){return o.n+' '+(o.pct>0?'+':'')+o.pct.toFixed(2)+'%';}).join(' · ')); }
+    L.push('');
+    L.push('—— 数据型复盘(公开行情聚合) · 旺仔版生成 · 不构成投资建议 ——');
+    var txt=L.join('\n');
+    _revCache.txt=txt;
+    showReview(txt);
+    if(btn){btn.disabled=false; btn.textContent='📋 一键复盘';}
+  }).catch(function(e){ if(btn){btn.disabled=false; btn.textContent='📋 一键复盘';} alert('生成失败: '+e); });
+}
+function showReview(txt){
+  var old=document.getElementById('revCard'); if(old) old.remove();
+  var card=document.createElement('div');
+  card.id='revCard';
+  card.style.cssText='margin:8px 14px;padding:10px 12px;background:#10141c;border:1px solid #2a3142;border-radius:10px';
+  card.innerHTML='<div style="display:flex;align-items:center;margin-bottom:6px"><b style="color:#e3b341;font-size:13px">📋 当日复盘(数据版)</b>'
+    +'<button onclick="copyReview()" style="margin-left:auto;background:#1a2438;border:1px solid #2a3142;color:#8ab4ff;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer">📋 复制文本</button>'
+    +'<button onclick="document.getElementById(\'revCard\').remove()" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;margin-left:6px">×</button></div>'
+    +'<pre id="revTxt" style="white-space:pre-wrap;font-size:11.5px;line-height:1.6;color:#c8d0e0;margin:0;font-family:inherit">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</pre>';
+  var anchor=document.getElementById('ztPoolBox'); if(anchor&&anchor.parentNode) anchor.parentNode.insertBefore(card, anchor);
+}
+function copyReview(){
+  var txt=_revCache.txt||'';
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(function(){ alert('✅已复制到剪贴板, 可直接粘贴'); }).catch(function(){ _copyFallback(txt); }); }
+  else _copyFallback(txt);
+}
+function _copyFallback(txt){
+  var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); alert('✅已复制'); }catch(e){ alert('复制失败, 请长按文本手动复制'); }
+  document.body.removeChild(ta);
+}
+
 /* ---- K线小窗 ---- */
 var kcCode='', kcName='', kcSeg='m';
 function showK(code,name){
