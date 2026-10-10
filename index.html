@@ -5,7 +5,7 @@
 <script>
 (function(){
   var K='wangzai';
-  var GATE_HTML='<html lang="zh-CN"><head><meta charset="UTF-8"><title>旺仔专用版</title><link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍼</text></svg>"></head><body style="display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#0d1117;color:#8b949e;font-size:16px;font-family:system-ui">🍼 旺仔专用版 · 请通过专属链接访问</body></html>';
+  var GATE_HTML=`<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>旺仔专用版</title></head><body style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;background:#0d1117;color:#8b949e;font-size:15px;font-family:system-ui">🍼 旺仔专用版<div style="margin-top:16px"><input id="gi" type="password" placeholder="输入专属口令" onkeydown="if(event.keyCode===13)document.getElementById('gb').click()" style="background:#161b22;border:1px solid #30363d;color:#e6edf3;border-radius:8px;padding:9px 12px;font-size:15px;outline:none;text-align:center;width:150px" /><button id="gb" onclick="var v=document.getElementById('gi').value; if(v==='wangzai'){ try{localStorage.setItem('mfx_gate','wangzai');}catch(e){} location.reload(); } else { document.getElementById('gm').textContent='口令不对'; }" style="margin-left:8px;background:#1f6feb;border:none;color:#fff;border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer">进入</button></div><div id="gm" style="margin-top:10px;font-size:12px;color:#f85149;height:16px"></div><div style="margin-top:6px;font-size:11px;color:#484f58">首次输入后本机永久有效</div></body></html>`;
   var ok=false;
   try{
     var q=new URLSearchParams(location.search).get('token');
@@ -23,7 +23,7 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍼</text></svg>">
-<link rel="manifest" href="./manifest.json"<link rel="apple-touch-icon" href="./apple-touch-icon.png"><meta name="apple-mobile-web-app-title" content="旺仔看盘"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#0c0f14"><title>🍼 盘面雷达 🍼 旺仔专用版 🍼</title>
+<link rel="manifest" href="./https://sfile.chatglm.cn/workspace/file/e7/e7a0411266.json"><link rel="apple-touch-icon" href="./https://sfile.chatglm.cn/workspace/image/56/565018aee3.png"><meta name="apple-mobile-web-app-title" content="旺仔看盘"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#0c0f14"><title>🍼 盘面雷达 🍼 旺仔专用版 🍼</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { background:#0e1117; color:#e8e8e8; font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; font-size:14px; padding-bottom:70px; }
