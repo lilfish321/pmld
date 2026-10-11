@@ -821,9 +821,21 @@ function loadAucEnh(){
 }
 
 var _aucTimer=null, _aucSort=0;
+function ensureYztPool(cb){
+  if(_yZTPool && _yZTPool.length){ cb(_yZTPool); return; }
+  tryFetchEX('/getTopicZTPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=300&sort=fbt%3Aasc&date='+lastTradeDay().replace(/-/g,'')).then(function(pd){
+    _yZTPool=((pd.data||{}).pool)||[]; cb(_yZTPool);
+  }).catch(function(){ cb([]); });
+}
 function loadAucRank(){
   var el=document.getElementById('aucRank'); if(!el) return;
-  var z=_yZTPool||[];
+  el.innerHTML='<span style="color:#66708a;font-size:11px">拉取昨日涨停池…</span>';
+  ensureYztPool(function(z){
+    aucRankRender(z);
+  });
+}
+function aucRankRender(z){
+  var el=document.getElementById('aucRank'); if(!el) return;
   if(!z.length){ el.innerHTML='<span style="color:#66708a;font-size:11px">暂无昨日涨停池数据</span>'; return; }
   var codes=z.slice(0,30).map(function(o){return o.c;});
   var q=codes.map(function(c){ return (c.charAt(0)==='6'?'sh':(c.charAt(0)==='8'||c.charAt(0)==='4'?'bj':'sz'))+c; }).join(',');
