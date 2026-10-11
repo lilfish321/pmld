@@ -235,7 +235,7 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
 </head>
 <body>
 <div class="hd"><h1>盘面雷达 🍼 旺仔专用版 🍼 <span style="font-size:11px;color:#66708a" id="mstate"></span></h1><div style="display:flex;align-items:center;gap:8px"><button onclick="toggleTheme()" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer">🌗</button><div class="upd" id="upd">加载中…</div></div></div>
-<div class="tabs3"><span class="on" id="T0" onclick="swPage(0)">盘面情绪</span><span id="T6" onclick="swPage(6)">📰快讯</span><span id="T1" onclick="swPage(1)">板块资金</span><span id="T2" onclick="swPage(2)">我的票</span><span id="T4" onclick="swPage(4)">竞价</span><span id="T5" onclick="swPage(5)">🔥涨停哨兵</span><span id="T7" onclick="swPage(7)">🔴涨停池</span><span id="srcHealth" style="margin-left:auto"></span></div>
+<div class="tabs3"><span class="on" id="T0" onclick="swPage(0)">盘面情绪</span><span id="T6" onclick="swPage(6)">📰快讯</span><span id="T1" onclick="swPage(1)">板块资金</span><span id="T2" onclick="swPage(2)">我的票</span><span id="T4" onclick="swPage(4)">竞价</span><span id="T3" onclick="swPage(3)">🧮工具·历史</span><span id="T5" onclick="swPage(5)">🔥涨停哨兵</span><span id="T7" onclick="swPage(7)">🔴涨停池</span><span id="srcHealth" style="margin-left:auto"></span></div>
 
 <div id="page0">
   <div class="idx" id="idx"></div>
@@ -323,9 +323,9 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
   <div id="mylist"></div>
 </div>
 
-<div id="page3" style="display:none"></div>
 
 <div id="page4" style="display:none">
+  <div style="padding:8px 12px 0"><div style="font-size:13px;font-weight:700;color:#e6edf3;margin-bottom:6px">⚡ 竞价异动榜 <span style="font-size:10px;color:#66708a;font-weight:400">昨日涨停Top30·竞价时段自动刷新</span></div><div id="aucRank"><span style="color:#66708a;font-size:11px">加载中…</span></div></div>
   <div class="aqstate" id="aqState">—</div>
   <div id="sellClock" style="display:none"></div>
   <div class="secttl">⭐ 我的票竞价（9:25后有效）</div>
@@ -340,6 +340,30 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
   <div id="aqTop"><div class="empty">—</div></div>
 </div>
 
+
+<div id="page3" style="display:none">
+  <div style="padding:10px 12px">
+  <div style="font-size:13px;font-weight:700;color:#e6edf3;margin-bottom:8px">🧮 打板计算器</div>
+  <div style="display:flex;gap:6px;margin-bottom:6px">
+    <input id="calcPx" type="number" step="0.01" placeholder="现价" style="flex:1;background:#161b22;border:1px solid #30363d;color:#e6edf3;border-radius:8px;padding:8px;font-size:14px">
+    <select id="calcLmt" style="background:#161b22;border:1px solid #30363d;color:#e6edf3;border-radius:8px;padding:8px;font-size:13px">
+      <option value="10">10cm主板</option><option value="20">20cm创科</option><option value="30">30cm北交</option><option value="5">5cmST</option>
+    </select>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:8px">
+    <input id="calcCap" type="number" placeholder="本金(万,选填)" style="flex:1;background:#161b22;border:1px solid #30363d;color:#e6edf3;border-radius:8px;padding:8px;font-size:14px">
+    <input id="calcSeal" type="number" placeholder="封单额(亿,选填)" style="flex:1;background:#161b22;border:1px solid #30363d;color:#e6edf3;border-radius:8px;padding:8px;font-size:14px">
+  </div>
+  <button onclick="calcBoard()" style="width:100%;background:#238636;color:#fff;border:0;border-radius:8px;padding:9px;font-size:14px;font-weight:700">计算</button>
+  <div id="calcOut" style="margin-top:8px;font-size:12px;color:#c9d1d9;line-height:1.9;background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px;min-height:40px">输入现价后点计算</div>
+
+  <div style="font-size:13px;font-weight:700;color:#e6edf3;margin:14px 0 8px">🧬 历史同构统计 <span style="font-size:10px;color:#66708a;font-weight:400">公开统计层·每周随预案更新</span></div>
+  <div id="homCard" style="font-size:12px;color:#c9d1d9;line-height:1.8;background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px">加载中…</div>
+
+  <div style="font-size:13px;font-weight:700;color:#e6edf3;margin:14px 0 8px">📊 炸板率近7日 <span style="font-size:10px;color:#66708a;font-weight:400">自动记录·打开即存</span></div>
+  <div id="zb7" style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px;min-height:60px"></div>
+  </div>
+</div>
 <div id="page5" style="display:none">
   <div style="display:flex;align-items:center;padding:10px 14px 0;gap:10px">
     <div class="secttl" style="margin:0">🔥 涨停哨兵 <b id="senN"></b></div>
@@ -497,6 +521,7 @@ function loadMood(){
       _dtData=dt||[];
       renderIdx(idx);
       renderThermo(zt,dt,zb,idx);
+      try{ var _ml=0; (zt||[]).forEach(function(o){ if(o.lbc>_ml) _ml=o.lbc; }); moodSave((zt||[]).length, (zb||[]).length, (dt||[]).length, _ml); }catch(e){}
       renderCamps(sec);
       renderLadder(zt||[]);
       renderDT(dt||[]);
@@ -532,7 +557,14 @@ function renderThermo(zt,dt,zb,idx){
   if(idx) idx.forEach(function(o){ if((o.f12==='000001'||o.f12==='399001')&&o.f104!==undefined){ up+=(o.f104||0); dn+=(o.f105||0); } }); /* 仅上证+深成: 创业板指/科创50的f104f105=整市场家数,与成指/上证重叠 */
   var zbl = (zt&&zb&&zt.length+zb.length>0) ? (zb.length/(zt.length+zb.length)*100) : null;
   var g=document.getElementById('thermo');
-  g.innerHTML =
+  /* V3.0五档分档条: 公开通用阈值(涨停家数主导) */
+  var _tier = zt==null ? '?' : (zt>=100?'过热':zt>=70?'高位':zt>=45?'正常':zt>=25?'低位':'冰点');
+  var _tierC = {'过热':'#ff6b6b','高位':'#ffd23e','正常':'#3ddc84','低位':'#8892a8','冰点':'#5b8def','?':'#66708a'}[_tier];
+  var _ticks = [[100,'过热'],[70,'高位'],[45,'正常'],[25,'低位'],[0,'冰点']];
+  var _bar = '<div style="display:flex;height:8px;border-radius:4px;overflow:hidden;margin:6px 0 3px">';
+  _ticks.slice().reverse().forEach(function(t,i,arr){ var nxt=arr[i+1]; var lo=t[0], hi=nxt?nxt[0]:110; var w=Math.max(6,Math.round((hi-lo)/110*100)); _bar+='<div style="width:'+w+'%;background:'+(zt!=null&&zt>=lo&&zt<hi?'#fff':'#2a3142')+';border-right:1px solid #0d1117" title="'+t[1]+' '+lo+'-"></div>'; });
+  _bar += '</div><div style="font-size:10px;color:'+_tierC+';margin-bottom:4px">档位: <b>'+_tier+'</b> (阈值: 冰点<25/低位25-44/正常45-69/高位70-99/过热100+)</div>';
+  g.innerHTML = _bar +
     cell('涨停', zt?zt.length:'—', 'pos') + cell('最高板', zt?maxL:'—', maxL>=5?'pos':'') + cell('炸板率', zbl===null?'—':zbl.toFixed(0)+'%', zbl>=40?'neg':'') +
     cell('跌停', dt?dt.length:'—', 'neg') + cell('上涨', (zt&&dn===0&&up===0)?'—':up||0, 'pos') + cell('下跌', (zt&&dn===0&&up===0)?'—':dn||0, 'neg');
   var hints=[];
@@ -715,6 +747,98 @@ function tgS(i){
   d.style.display = d.style.display==='block'?'none':'block';
   openRow = d.style.display==='block'?i:null;
 }
+
+/* ---------- 旺仔V3.0: 打板计算器+同构统计+7日曲线+竞价排序榜 ---------- */
+var HOMO_CARD={"fp":"10.9: 涨停69/炸16.9%/跌8/高9板","top":[{"d":"2026-01-20","sim":82,"nxt":"次日+22只·上证+0.08%"},{"d":"2025-11-12","sim":71,"nxt":"次日+32只·上证+0.73%"},{"d":"2025-09-22","sim":71,"nxt":"次日-18只·上证-0.18%(分歧样本)"}],"stat":"历史同构日次日涨停扩散67% — 公开统计,非判断"};
+function calcBoard(){
+  var px=parseFloat(document.getElementById('calcPx').value);
+  var lmt=parseFloat(document.getElementById('calcLmt').value);
+  var cap=parseFloat(document.getElementById('calcCap').value);
+  var seal=parseFloat(document.getElementById('calcSeal').value);
+  var out=document.getElementById('calcOut');
+  if(!px){ out.innerHTML='<span style="color:#ff6b6b">先输入现价</span>'; return; }
+  var zt=Math.round(px*(1+lmt/100)*100)/100;
+  var l='';
+  l+='今日涨停价 <b style="color:#ff8a9a;font-size:15px">'+zt.toFixed(2)+'</b> (+'+lmt+'%)<br>';
+  l+='次日2板价 '+ (Math.round(zt*(1+lmt/100)*100)/100).toFixed(2) +' · 3板价 '+(Math.round(zt*Math.pow(1+lmt/100,2)*100)/100).toFixed(2)+'<br>';
+  l+='-2%止损位 <b style="color:#6fe08f">'+(Math.round(px*0.98*100)/100).toFixed(2)+'</b> · -5%位 '+(Math.round(px*0.95*100)/100).toFixed(2)+'<br>';
+  l+='买入1手需 '+Math.round(zt*100)+'元';
+  if(cap){ var amt=cap*10000; l+='<br>'+cap+'万本金: 3成'+Math.round(amt*0.3/zt/100)+'股 · 5成'+Math.round(amt*0.5/zt/100)+'股 · 满仓'+Math.round(amt/zt/100)+'股'; }
+  if(seal){ l+='<br>封单'+seal+'亿: 封成比=封单/当日成交, >0.3强 · <0.1弱'; }
+  out.innerHTML=l;
+}
+function renderHomCard(){
+  var el=document.getElementById('homCard'); if(!el) return;
+  var h='<div style="color:#8a93a3">'+HOMO_CARD.fp+'</div>';
+  HOMO_CARD.top.forEach(function(t){
+    var c=t.nxt.indexOf('-')>=0?'#ff6b6b':'#3ddc84';
+    h+='<div>'+t.d+' <b style="color:#ffd23e">'+t.sim+'%</b> → <span style="color:'+c+'">'+t.nxt+'</span></div>';
+  });
+  h+='<div style="color:#66708a;margin-top:3px">'+HOMO_CARD.stat+'</div>';
+  el.innerHTML=h;
+}
+function moodLog(){ try{ return JSON.parse(localStorage.getItem('wz_mood')||'{}'); }catch(e){ return {}; } }
+function moodSave(zt,zb,dt,maxl){
+  try{
+    var log=moodLog(); var d=new Date();
+    var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    if(!log[key]) log[key]={zt:zt,zb:zb,dt:dt,maxl:maxl};
+    var keys=Object.keys(log).sort();
+    while(keys.length>30){ delete log[keys.shift()]; keys=Object.keys(log).sort(); }
+    localStorage.setItem('wz_mood',JSON.stringify(log));
+  }catch(e){}
+}
+function renderZB7(){
+  var el=document.getElementById('zb7'); if(!el) return;
+  var log=moodLog(); var keys=Object.keys(log).sort().slice(-7);
+  if(!keys.length){ el.innerHTML='<span style="color:#66708a;font-size:11px">暂无历史——每个交易日打开本页自动记录,7日后出曲线</span>'; return; }
+  var h='', maxr=0;
+  keys.forEach(function(k){ var o=log[k]; var r=o.zt+o.zb>0? o.zb/(o.zt+o.zb)*100 :0; if(r>maxr)maxr=r; });
+  keys.forEach(function(k){
+    var o=log[k]; var r=o.zt+o.zb>0? o.zb/(o.zt+o.zb)*100 :0;
+    var hgt=Math.max(4, Math.round(r/maxr*56));
+    var col=r>40?'#ff6b6b':r>25?'#ffd23e':'#3ddc84';
+    h+='<div style="display:inline-block;text-align:center;margin:0 5px"><div style="font-size:9px;color:#66708a">'+r.toFixed(0)+'%</div><div style="width:22px;height:'+hgt+'px;background:'+col+';border-radius:3px 3px 0 0"></div><div style="font-size:8.5px;color:#66708a">'+k.slice(5)+'</div></div>';
+  });
+  el.innerHTML='<div style="display:flex;align-items:flex-end">'+h+'</div>';
+}
+
+function loadAucEnh(){
+  loadAuction();
+  if(document.getElementById("aucRank")) loadAucRank();
+  if(_aucTimer) clearInterval(_aucTimer);
+  _aucTimer=setInterval(function(){ var t=new Date().getHours()*100+new Date().getMinutes(); if(t>=915&&t<=926) loadAucRank(); }, 15000);
+}
+
+var _aucTimer=null, _aucSort=0;
+function loadAucRank(){
+  var el=document.getElementById('aucRank'); if(!el) return;
+  var z=_yZTPool||[];
+  if(!z.length){ el.innerHTML='<span style="color:#66708a;font-size:11px">暂无昨日涨停池数据</span>'; return; }
+  var codes=z.slice(0,30).map(function(o){return o.c;});
+  var q=codes.map(function(c){ return (c.charAt(0)==='6'?'sh':(c.charAt(0)==='8'||c.charAt(0)==='4'?'bj':'sz'))+c; }).join(',');
+  fetchGet('https://qt.gtimg.cn/q='+q, function(txt){
+    var rows=[];
+    txt.split(';').forEach(function(line){
+      var f=line.split('=')[1]; if(!f) return; f=f.replace(/"/g,'').split('~');
+      if(f.length<46) return;
+      var pc=parseFloat(f[32]); var amt=parseFloat(f[37])*100; if(isNaN(pc)) pc=0; if(isNaN(amt)) amt=0;
+      rows.push({n:f[1], c:f[2], px:f[3], pc:pc, amt:amt});
+    });
+    if(_aucSort===1) rows.sort(function(a,b){ return b.amt-a.amt; });
+    else rows.sort(function(a,b){ return b.pc-a.pc; });
+    var h='<div style="display:flex;gap:6px;margin-bottom:5px"><span class="lf'+(_aucSort===0?' on':'')+'" onclick="_aucSort=0;loadAucRank()">按涨幅</span><span class="lf'+(_aucSort===1?' on':'')+'" onclick="_aucSort=1;loadAucRank()">按竞额</span><span style="color:#66708a;font-size:10px;align-self:center" id="aucTs"></span></div>';
+    h+='<table style="width:100%;font-size:11px;border-collapse:collapse">';
+    rows.slice(0,15).forEach(function(r,i){
+      var c=r.pc>=0?'#ff5a5a':'#3ddc84';
+      h+='<tr><td style="padding:3px;color:#66708a">'+(i+1)+'</td><td style="padding:3px">'+r.n+'</td><td style="padding:3px">'+r.px+'</td><td style="padding:3px;color:'+c+'">'+(r.pc>=0?'+':'')+r.pc.toFixed(2)+'%</td><td style="padding:3px;color:#8892a8">'+(r.amt/1e4).toFixed(0)+'万</td></tr>';
+    });
+    h+='</table>';
+    el.innerHTML=h;
+    var ts=document.getElementById('aucTs'); if(ts) ts.textContent='刷新@'+new Date().toTimeString().slice(0,8);
+  });
+}
+
 function swTab(n){ tab=n; openRow=null; document.getElementById('tb0').className=n===0?'on':''; document.getElementById('tb1').className=n===1?'on':''; loadSector(); }
 function swSort(n){ sort=n; openRow=null; for(var i=0;i<3;i++){ document.getElementById('s'+i).className=i===n?'on':''; } loadSector(); }
 
@@ -1004,7 +1128,7 @@ function loadCurrent(){
   document.getElementById('mstate').textContent=marketState();
   if(page===0) loadMood();
   else if(page===1) loadSector();
-  else if(page===4) loadAuction();
+  else if(page===4) loadAucEnh();
   else if(page===5) loadSentinel();
   else if(page===7) loadZtPool();
   else loadMy();
@@ -1069,6 +1193,7 @@ function _normThs(lst){
 }
 setInterval(function(){ if(!document.hidden) loadNews(); }, 60000);
 function swPage(n){
+  if(n===3){ renderHomCard(); renderZB7(); }
   page=n;
   for(var i=0;i<8;i++){
     var tb=document.getElementById('T'+i); if(tb) tb.className=i===n?'on':'';
