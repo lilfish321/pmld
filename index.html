@@ -235,7 +235,7 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
 </head>
 <body>
 <div class="hd"><h1>盘面雷达 🍼 旺仔专用版 🍼 <span style="font-size:11px;color:#66708a" id="mstate"></span></h1><div style="display:flex;align-items:center;gap:8px"><button onclick="toggleTheme()" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer">🌗</button><div class="upd" id="upd">加载中…</div></div></div>
-<div class="tabs3"><span class="on" id="T0" onclick="swPage(0)">盘面情绪</span><span id="T6" onclick="swPage(6)">📰快讯</span><span id="T1" onclick="swPage(1)">板块资金</span><span id="T2" onclick="swPage(2)">我的票</span><span id="T4" onclick="swPage(4)">竞价</span><span id="T3" onclick="swPage(3)">🧮工具·历史</span><span id="T5" onclick="swPage(5)">🔥涨停哨兵</span><span id="T7" onclick="swPage(7)">🔴涨停池</span><span id="srcHealth" style="margin-left:auto"></span></div>
+<div class="tabs3"><span class="on" id="T0" onclick="swPage(0)">盘面情绪</span><span id="T6" onclick="swPage(6)">📰快讯</span><span id="T1" onclick="swPage(1)">板块资金</span><span id="T2" onclick="swPage(2)">我的票</span><span id="T4" onclick="swPage(4)">竞价</span><span id="T3" onclick="swPage(3)">🧮工具·历史</span><span id="T7" onclick="swPage(7)">🔴涨停池</span><span id="srcHealth" style="margin-left:auto"></span></div>
 
 <div id="page0">
   <div class="idx" id="idx"></div>
@@ -243,6 +243,7 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
   <div style="display:flex;justify-content:flex-end;padding:0 14px 4px"></div>
   <div id="eventBar" style="display:none"></div>
   <div class="thermo" id="thermo"></div>
+  <div id="thermoBar" style="padding:0 14px"></div>
   <div class="hint" id="thint"></div>
   <div class="secttl">⚡ 当日主战场（概念资金Top10+题材库标注，动态）</div>
   <div class="camps" id="camps"></div>
@@ -316,11 +317,20 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
     <button id="alertBtn" onclick="toggleAlert()" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:6px;padding:4px 10px;cursor:pointer">关闭</button>
     <span id="alertState" style="color:#66708a;font-size:11px"></span>
   </div><div style="display:flex;gap:6px;padding:0 14px 8px;align-items:center">
-    <button onclick="document.getElementById('_impFile').click()" style="flex:1;background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:6px 0;font-size:12px;cursor:pointer">📂 导入恢复</button>
+    <button onclick="document.getElementById('_impFile').click()" style="flex:1;background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:6px 0;font-size:12px;cursor:pointer">📂 导入自选</button>
+    <button onclick="expMyJson()" style="flex:1;background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:6px 0;font-size:12px;cursor:pointer">💾 导出自选</button>
+    <input type="file" id="_impFile" accept=".json" style="display:none" onchange="impMy(this)">
     </div>
   <div class="rgbar" id="rgbar"></div>
   <div class="legend" id="legend"></div>
   <div id="mylist"></div>
+  <div style="display:flex;align-items:center;padding:10px 14px 0;gap:10px">
+    <div class="secttl" style="margin:0">🔥 涨停哨兵 <b id="senN"></b></div>
+    <button onclick="toggleSentinel()" id="senBtn" style="margin-left:auto;background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer">开启巡检</button>
+  </div>
+  <div class="hint" id="senHint">盯自选里的涨停票：💥炸板 / 🟡封单衰减 / 🟢回封，60秒巡检（弹窗+声音）。封单衰减=较当日峰值。</div>
+  <div class="secttl">📌 我的涨停票 <span style="font-weight:400;font-size:10px;color:#66708a">（自选∩今日涨停池）</span></div>
+  <div id="senMy"><div class="empty">—</div></div>
 </div>
 
 
@@ -364,20 +374,6 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
   <div id="zb7" style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px;min-height:60px"></div>
   </div>
 </div>
-<div id="page5" style="display:none">
-  <div style="display:flex;align-items:center;padding:10px 14px 0;gap:10px">
-    <div class="secttl" style="margin:0">🔥 涨停哨兵 <b id="senN"></b></div>
-    <button onclick="toggleSentinel()" id="senBtn" style="margin-left:auto;background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer">开启巡检</button>
-  </div>
-  <div class="hint" id="senHint">盯自选里的涨停票：💥炸板 / 🟡封单衰减 / 🟢回封，60秒巡检（浏览器弹窗+声音）。封单衰减=较当日峰值。</div>
-  <div class="secttl">📌 我的涨停票 <span style="font-weight:400;font-size:10px;color:#66708a">（自选∩今日涨停池）</span></div>
-  <div id="senMy"><div class="empty">—</div></div>
-  <div class="secttl">🧱 封单榜Top20 <span style="font-weight:400;font-size:10px;color:#66708a">（点名称看K线小窗）</span></div>
-  <div id="senPool"><div class="empty">—</div></div>
-  <div class="secttl">⚡ 今日异动记录</div>
-  <div id="senLog"><div class="empty">—</div></div>
-</div>
-
 <div class="foot">数据源：东方财富公开接口 · 仅供参考不构成投资建议 · 记得天天好好学习 📚</div>
 
 <script>
@@ -557,14 +553,7 @@ function renderThermo(zt,dt,zb,idx){
   if(idx) idx.forEach(function(o){ if((o.f12==='000001'||o.f12==='399001')&&o.f104!==undefined){ up+=(o.f104||0); dn+=(o.f105||0); } }); /* 仅上证+深成: 创业板指/科创50的f104f105=整市场家数,与成指/上证重叠 */
   var zbl = (zt&&zb&&zt.length+zb.length>0) ? (zb.length/(zt.length+zb.length)*100) : null;
   var g=document.getElementById('thermo');
-  /* V3.0五档分档条: 公开通用阈值(涨停家数主导) */
-  var _tier = zt==null ? '?' : (zt>=100?'过热':zt>=70?'高位':zt>=45?'正常':zt>=25?'低位':'冰点');
-  var _tierC = {'过热':'#ff6b6b','高位':'#ffd23e','正常':'#3ddc84','低位':'#8892a8','冰点':'#5b8def','?':'#66708a'}[_tier];
-  var _ticks = [[100,'过热'],[70,'高位'],[45,'正常'],[25,'低位'],[0,'冰点']];
-  var _bar = '<div style="display:flex;height:8px;border-radius:4px;overflow:hidden;margin:6px 0 3px">';
-  _ticks.slice().reverse().forEach(function(t,i,arr){ var nxt=arr[i+1]; var lo=t[0], hi=nxt?nxt[0]:110; var w=Math.max(6,Math.round((hi-lo)/110*100)); _bar+='<div style="width:'+w+'%;background:'+(zt!=null&&zt>=lo&&zt<hi?'#fff':'#2a3142')+';border-right:1px solid #0d1117" title="'+t[1]+' '+lo+'-"></div>'; });
-  _bar += '</div><div style="font-size:10px;color:'+_tierC+';margin-bottom:4px">档位: <b>'+_tier+'</b> (阈值: 冰点<25/低位25-44/正常45-69/高位70-99/过热100+)</div>';
-  g.innerHTML = _bar +
+  g.innerHTML =
     cell('涨停', zt?zt.length:'—', 'pos') + cell('最高板', zt?maxL:'—', maxL>=5?'pos':'') + cell('炸板率', zbl===null?'—':zbl.toFixed(0)+'%', zbl>=40?'neg':'') +
     cell('跌停', dt?dt.length:'—', 'neg') + cell('上涨', (zt&&dn===0&&up===0)?'—':up||0, 'pos') + cell('下跌', (zt&&dn===0&&up===0)?'—':dn||0, 'neg');
   var hints=[];
@@ -575,6 +564,27 @@ function renderThermo(zt,dt,zb,idx){
   if(zt && zt.length>=80) hints.push('🔥涨停80+ 情绪活跃');
   if(zt && dt && zt.length>0 && zt.length<40 && dt.length<10) hints.push('涨停<40 窄幅震荡，重个股轻板块');
   document.getElementById('thint').innerHTML=hints.join('<br>');
+  /* V3.1: 真温度计渐变条(涨跌家数下方独立行) */
+  var tz = zt ? Math.min(zt.length, 110) : null;
+  var zones = [['冰点',0,25,'#5b8def'],['低位',25,45,'#3ddc84'],['正常',45,70,'#ffd23e'],['高位',70,100,'#ff9f43'],['过热',100,110,'#ff5a5a']];
+  var cur = null;
+  zones.forEach(function(z){ if(tz!==null && tz>=z[1] && (tz<z[2] || (z[0]==='过热'&&tz>=100))) cur = z; });
+  var pos = tz!==null ? Math.min(97, Math.max(1.5, tz/110*100)) : null;
+  var bar = '<div style="margin:8px 0 2px">';
+  bar += '<div style="position:relative;height:14px;border-radius:7px;background:linear-gradient(90deg,#5b8def 0%,#3ddc84 23%,#ffd23e 41%,#ff9f43 64%,#ff5a5a 82%,#ff2d2d 100%);box-shadow:0 1px 4px rgba(0,0,0,.4)">';
+  if(pos!==null){
+    bar += '<div style="position:absolute;left:'+pos+'%;top:-4px;width:4px;height:22px;background:#fff;border-radius:2px;box-shadow:0 0 6px #fff,0 0 3px #000"></div>';
+    bar += '<div style="position:absolute;left:'+pos+'%;top:-20px;transform:translateX(-50%);font-size:11px;font-weight:700;color:#fff;background:#000a;padding:1px 7px;border-radius:6px;white-space:nowrap">🌡 '+tz+'家</div>';
+  }
+  bar += '</div><div style="display:flex;justify-content:space-between;font-size:10px;margin-top:3px">';
+  zones.forEach(function(z){
+    var on = cur && z[0]===cur[0];
+    bar += '<span style="color:'+(on?z[3]:'#4a5160')+';font-weight:'+(on?'700':'400')+'">'+z[0]+'</span>';
+  });
+  bar += '</div>';
+  if(cur) bar += '<div style="font-size:10.5px;color:'+cur[3]+';margin-top:2px">当前情绪区间: <b>'+cur[0]+'</b>'+(tz!==null?(' (涨停'+tz+'家)'):'')+'</div>';
+  bar += '</div>';
+  var tb = document.getElementById('thermoBar'); if(tb) tb.innerHTML = bar;
 }
 function cell(l,v,c){ return '<div class="tg"><div class="l">'+l+'</div><div class="v '+c+'">'+v+'</div></div>'; }
 function renderCamps(list){
@@ -845,6 +855,37 @@ function swSort(n){ sort=n; openRow=null; for(var i=0;i<3;i++){ document.getElem
 /* ---------- Tab2: 我的票 ---------- */
 function getMy(){ try{ return JSON.parse(localStorage.getItem('mfx_stocks')||'[]'); }catch(e){ return []; } }
 function setMy(a){ try{ localStorage.setItem('mfx_stocks', JSON.stringify(a)); }catch(e){} }
+
+/* ---------- V3.1: 我的票导入/导出(修复按钮空指向) ---------- */
+function expMyJson(){
+  var a = getMy();
+  var blob = new Blob([JSON.stringify({app:'旺仔自选', date:today(), stocks:a}, null, 1)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var link = document.createElement('a');
+  link.href = url; link.download = 'wangzai_stocks_'+today()+'.json';
+  document.body.appendChild(link); link.click(); link.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 500);
+}
+function impMy(inp){
+  var f = inp.files && inp.files[0]; if(!f) return;
+  var rd = new FileReader();
+  rd.onload = function(){
+    try{
+      var d = JSON.parse(rd.result);
+      var list = d.stocks || (Array.isArray(d) ? d : null);
+      if(!list || !list.length) throw new Error('找不到stocks数组');
+      if(!confirm('导入 '+list.length+' 只自选, 追加到当前列表?')) return;
+      var have = {}; getMy().forEach(function(s){ have[String(s.c)] = 1; });
+      var add = 0;
+      list.forEach(function(s){
+        var c = String(s.c||s.code||'');
+        if(c && !have[c]){ getMy; var arr = getMy(); arr.push({c:c, n:s.n||s.name||c}); setMy(arr); have[c]=1; add++; }
+      });
+      drawMy(); alert('✅ 已导入 '+add+' 只(重复跳过)');
+    }catch(e){ alert('❌ 导入失败: '+e.message); }
+  };
+  rd.readAsText(f);
+}
 function addStock(){
   var inp=document.getElementById('codeIn'), v=(inp.value||'').trim();
   if(!/^\d{6}$/.test(v)){ alert('请输入6位数字代码'); return; }
