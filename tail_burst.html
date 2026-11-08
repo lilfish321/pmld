@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>尾盘爆量方向探测器 V0.1·主脑差异化</title>
+<style>
+  body{background:#0d1117;color:#c9d1d9;font-family:"Microsoft YaHei",sans-serif;margin:0;padding:12px;font-size:13px}
+  h1{font-size:17px;color:#58a6ff;margin:0 0 4px}
+  .sub{color:#8b949e;font-size:11px;margin-bottom:10px}
+  .bar{margin:8px 0}
+  button{background:#21262d;color:#58a6ff;border:1px solid #30363d;border-radius:4px;padding:6px 14px;cursor:pointer;font-size:12px}
+  button:hover{background:#30363d}
+  button.run{background:#1f6feb;color:#fff;border-color:#1f6feb}
+  textarea{width:100%;background:#0d1117;color:#c9d1d9;border:1px solid #30363d;border-radius:4px;padding:6px;font-size:11px;font-family:Consolas,monospace}
+  .legend span{display:inline-block;margin-right:10px;padding:1px 8px;border-radius:3px;font-size:11px}
+  .t-seize{background:#238636;color:#fff}
+  .t-crash{background:#da3633;color:#fff}
+  .t-fix{background:#9e6a03;color:#fff}
+  .t-sneak{background:#8957e5;color:#fff}
+  .t-move{background:#30363d;color:#58a6ff}
+  .t-calm{background:#21262d;color:#8b949e}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{border:1px solid #21262d;padding:4px 6px;text-align:left;font-size:12px}
+  th{background:#161b22;color:#58a6ff;position:sticky;top:0}
+  .warn{color:#f85149}
+  .good{color:#3fb950}
+  .dim{color:#8b949e}
+  .stat{margin:6px 0;color:#8b949e}
+  #log{background:#161b22;border:1px solid #21262d;border-radius:4px;padding:6px;margin-top:6px;font-size:11px;color:#8b949e;max-height:90px;overflow-y:auto}
+</style>
+</head>
+<body>
+<h1>🎯 尾盘爆量方向探测器 <span style="font-size:11px;color:#8b949e">V0.1</span></h1>
+<div class="sub">主脑差异化功能 · 14:30-15:00窗口爆量方向分类 → 次日承接/低开预测 · 数据源: 腾讯m1分钟级(CORS直连) · Win7/Firefox兼容</div>
+
+<div class="bar">
+  <button class="run" onclick="runBuiltin()">① 回测·内置周五(11.6)数据</button>
+  <button onclick="toggleReal()">② 实时/自选池扫描</button>
+</div>
+
+<div id="realPanel" style="display:none">
+  <div class="sub" style="color:#f0883e">粘贴池子JSON(数组: ["603381","605339"] 或 [{code,name},...]) → 盘中14:30后跑/收盘后跑均可</div>
+  <textarea id="poolInput" rows="4" placeholder='["603381","605339","002088"] 或粘贴dashboard orders格式'></textarea>
+  <div class="bar"><button class="run" onclick="runPool()">▶ 扫描</button> <span class="dim">限速0.35s/只 · 50只约18秒</span></div>
+</div>
+
+<div class="legend">
+  <span class="t-seize">尾盘抢筹→承接预期+</span>
+  <span class="t-crash">尾盘砸盘→大低开预警</span>
+  <span class="t-fix">地天修复</span>
+  <span class="t-sneak">偷袭板(14:50后首封)</span>
+  <span class="t-move">异动未封死</span>
+  <span class="t-calm">平静</span>
+</div>
+
+<div class="stat" id="stat"></div>
+<table id="tbl" style="display:none"><thead><tr><th>分类</th><th>名称</th><th>代码</th><th>板</th><th>尾盘峰</th><th>判读</th></tr></thead><tbody></tbody></table>
+<div id="log"></div>
+
+<script>
+// ===== 内置回测数据(11.6·32只全量·python v1.1产物) =====
+var BUILTIN=[
+ {tag:"尾盘抢筹",name:"永臻股份",code:"603381",board:"4连板·光伏设备",tail:"x25.7",detail:"窗口1次爆量·最后x25.7@20.74封死20.74·次日承接预期+"},
+ {tag:"尾盘抢筹",name:"南侨食品",code:"605339",board:"2连板·休闲食品",tail:"x36.7",detail:"窗口2次爆量·最后x28.5@15.8封死15.8·次日承接预期+"},
+ {tag:"地天修复",name:"鲁阳节能",code:"002088",board:"4连板·装修建材",tail:"x12.0",detail:"深水-7.0%→最后爆量@11.09x11.3→回封11.09·修复成功"},
+ {tag:"平静",name:"闽发铝业",code:"002578",board:"5连板·工业金属",tail:"x1.0",detail:"尾盘峰x1.0(<8)·无方向"},
+ {tag:"平静",name:"浙文影业",code:"601599",board:"5连板·纺织制造",tail:"x1.9",detail:"尾盘峰x1.9(<8)·无方向"},
+ {tag:"平静",name:"万向德农",code:"600371",board:"N+N·种植业",tail:"x0.5",detail:"尾盘峰x0.5(<8)·无方向"},
+ {tag:"平静",name:"城市传媒",code:"600229",board:"首板·出版",tail:"x3.6",detail:"尾盘峰x3.6(<8)·无方向"},
+ {tag:"平静",name:"上海电影",code:"601595",board:"首板·影视院线",tail:"x0.6",detail:"尾盘峰x0.6(<8)·无方向"},
+ {tag:"平静",name:"思美传媒",code:"002712",board:"首板·广告营销",tail:"x2.1",detail:"尾盘峰x2.1(<8)·无方向"},
+ {tag:"平静",name:"大东方",code:"600327",board:"首板·一般零售",tail:"x2.3",detail:"尾盘峰x2.3(<8)·无方向"},
+ {tag:"平静",name:"东方创业",code:"600278",board:"首板·贸易",tail:"x1.5",detail:"尾盘峰x1.5(<8)·无方向"},
+ {tag:"平静",name:"东方嘉盛",code:"002889",board:"首板·物流",tail:"x0.2",detail:"尾盘峰x0.2(<8)·无方向"},
+ {tag:"平静",name:"东方海洋",code:"002086",board:"2连板·农产品加",tail:"x0.2",detail:"尾盘峰x0.2(<8)·无方向"},
+ {tag:"平静",name:"东方新能",code:"002310",board:"首板·电力",tail:"x2.8",detail:"尾盘峰x2.8(<8)·无方向"},
+ {tag:"平静",name:"日出东方",code:"603366",board:"首板·厨卫电器",tail:"x1.6",detail:"尾盘峰x1.6(<8)·无方向"},
+ {tag:"平静",name:"阳光照明",code:"600261",board:"2连板·照明设备",tail:"x0.3",detail:"尾盘峰x0.3(<8)·无方向"},
+ {tag:"平静",name:"新亚制程",code:"002388",board:"3连板·其他电子",tail:"x0.3",detail:"尾盘峰x0.3(<8)·无方向"},
+ {tag:"平静",name:"春光科技",code:"603657",board:"3连板·家电零部",tail:"x1.5",detail:"尾盘峰x1.5(<8)·无方向"},
+ {tag:"平静",name:"贝特利",code:"301697",board:"3连板20cm·光伏设备",tail:"x0.3",detail:"尾盘峰x0.3(<8)·无方向"},
+ {tag:"平静",name:"龙江交通",code:"601188",board:"首板·铁路公路",tail:"x2.7",detail:"尾盘峰x2.7(<8)·无方向"},
+ {tag:"平静",name:"新能股份",code:"000595",board:"首板·电力",tail:"x2.8",detail:"尾盘峰x2.8(<8)·无方向"},
+ {tag:"平静",name:"安彩高科",code:"600207",board:"首板·光伏设备",tail:"x2.1",detail:"尾盘峰x2.1(<8)·无方向"},
+ {tag:"平静",name:"立新能源",code:"001258",board:"首板·电力",tail:"x0.9",detail:"尾盘峰x0.9(<8)·无方向"},
+ {tag:"平静",name:"润贝航科",code:"001316",board:"首板·炼化贸易",tail:"x1.7",detail:"尾盘峰x1.7(<8)·无方向"},
+ {tag:"平静",name:"康冠科技",code:"001308",board:"首板·光学光电",tail:"x2.4",detail:"尾盘峰x2.4(<8)·无方向"},
+ {tag:"平静",name:"智动力",code:"300686",board:"首板20cm·消费电子",tail:"x0.6",detail:"尾盘峰x0.6(<8)·无方向"},
+ {tag:"平静",name:"润建股份",code:"002929",board:"2连板·通信服务",tail:"x0.4",detail:"尾盘峰x0.4(<8)·无方向"},
+ {tag:"平静",name:"侨银股份",code:"002973",board:"首板·环境治理",tail:"x0.2",detail:"尾盘峰x0.2(<8)·无方向"},
+ {tag:"平静",name:"华升股份",code:"600156",board:"首板·纺织制造",tail:"x4.6",detail:"尾盘峰x4.6(<8)·无方向"},
+ {tag:"平静",name:"美晨科技",code:"300237",board:"首板20cm·汽车零部",tail:"x0.6",detail:"尾盘峰x0.6(<8)·无方向"},
+ {tag:"平静",name:"红太阳",code:"000525",board:"首板·农化制品",tail:"x1.1",detail:"尾盘峰x1.1(<8)·无方向"},
+ {tag:"平静",name:"新赛股份",code:"600540",board:"首板·种植业",tail:"x0.4",detail:"尾盘峰x0.4(<8)·无方向"}
+];
+
+var TAG_CLS={"尾盘抢筹":"t-seize","尾盘砸盘":"t-crash","地天修复":"t-fix","尾盘偷袭板":"t-sneak","尾盘异动":"t-move","平静":"t-calm"};
+var TAG_ORDER={"尾盘抢筹":1,"尾盘砸盘":2,"地天修复":3,"尾盘偷袭板":4,"尾盘异动":5,"平静":9};
+
+function $(id){return document.getElementById(id)}
+function log(s){var l=$('log');l.innerHTML=s+'<br>'+l.innerHTML}
+function toggleReal(){var p=$('realPanel');p.style.display=p.style.display==='none'?'block':'none'}
+
+function render(rows){
+  rows.sort(function(a,b){return (TAG_ORDER[a.tag]||9)-(TAG_ORDER[b.tag]||9)});
+  var tb=$('tbl').getElementsByTagName('tbody')[0];tb.innerHTML='';
+  var cnt={};
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i];cnt[r.tag]=(cnt[r.tag]||0)+1;
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td><span class="'+(TAG_CLS[r.tag]||'t-calm')+'">'+r.tag+'</span></td>'
+      +'<td>'+r.name+'</td><td class="dim">'+r.code+'</td><td class="dim">'+(r.board||'-')+'</td>'
+      +'<td>'+(r.tail||'-')+'</td><td'+(r.tag==='尾盘砸盘'?' class="warn"':(r.tag==='尾盘抢筹'||r.tag==='地天修复'?' class="good"':' class="dim"'))+'>'+(r.detail||r.err||'')+'</td>';
+    tb.appendChild(tr);
+  }
+  $('tbl').style.display='table';
+  var s=[];
+  for(var k in cnt){ if(k!=='平静') s.push('<span class="'+TAG_CLS[k]+'">'+k+'×'+cnt[k]+'</span>'); }
+  s.push('<span class="dim">平静×'+(cnt['平静']||0)+'</span>·共'+rows.length+'只');
+  $('stat').innerHTML=s.join(' ');
+}
+
+function runBuiltin(){render(BUILTIN);log('✅ 内置回测(11.6)渲染完成·32只·与主脑手工分析3/3一致')}
+
+// ===== 实时扫描(XHR·腾讯ifzq CORS全开) =====
+function xGet(url,cb,fail){
+  var x=new XMLHttpRequest();
+  x.open('GET',url,true);
+  x.timeout=12000;
+  x.onreadystatechange=function(){ if(x.readyState===4){ if(x.status===200){try{cb(JSON.parse(x.responseText))}catch(e){fail('parse:'+e.message)}} else fail('http:'+x.status); } };
+  x.ontimeout=function(){fail('timeout')};
+  x.onerror=function(){fail('net')};
+  x.send();
+}
+function full(code){return (code.charAt(0)==='6'||code.charAt(0)==='9')?'sh'+code:((code.charAt(0)==='4'||code.charAt(0)==='8')?'bj'+code:'sz'+code)}
+
+function detect(rows,code,name,board){
+  var prev=0,mins=[];
+  for(var i=0;i<rows.length;i++){
+    var p=rows[i].split(' ');
+    if(p.length>=3){mins.push([p[0],parseFloat(p[1]),parseFloat(p[2])-prev]);prev=parseFloat(p[2]);}
+  }
+  if(!mins.length)return {tag:'ERR',name:name,code:code,detail:'无分时',board:board};
+  var sum=0;for(var j=0;j<mins.length;j++)sum+=mins[j][2];
+  var avg=sum/mins.length;
+  var close=mins[mins.length-1][1];
+  var tail=[],dayMax=mins[0][1],dayMin=mins[0][1];
+  for(var k=0;k<mins.length;k++){
+    if(mins[k][0]>='1430')tail.push(mins[k]);
+    if(mins[k][1]>dayMax)dayMax=mins[k][1];
+    if(mins[k][1]<dayMin)dayMin=mins[k][1];
+  }
+  var openPx=mins[0][1];
+  var deepwater=(dayMin-openPx)/openPx<-0.05;
+  var tailMax=0;for(var m=0;m<tail.length;m++){var mm=tail[m][2]/avg;if(mm>tailMax)tailMax=mm;}
+  var bursts=[];for(var n=0;n<tail.length;n++){if(tail[n][2]>avg*8)bursts.push(tail[n]);}
+  function r1(x){return Math.round(x*10)/10}
+  if(bursts.length){
+    var lb=bursts[bursts.length-1],sealed=close>=dayMax*0.999;
+    if(sealed&&dayMax===close){
+      var firstZt=null;for(var q=0;q<mins.length;q++){if(mins[q][1]>=close*0.999){firstZt=mins[q][0];break;}}
+      if(deepwater)return {tag:'地天修复',name:name,code:code,board:board,tail:'x'+r1(tailMax),detail:'深水'+r1((dayMin-openPx)/openPx*100)+'%→最后爆量x'+r1(lb[2]/avg)+'@'+lb[1]+'→回封'+close};
+      if(firstZt&&firstZt>='1450')return {tag:'尾盘偷袭板',name:name,code:code,board:board,tail:'x'+r1(tailMax),detail:firstZt+'首次封死·x'+r1(lb[2]/avg)+'·千金定律观察'};
+      return {tag:'尾盘抢筹',name:name,code:code,board:board,tail:'x'+r1(tailMax),detail:'窗口'+bursts.length+'次爆量·最后x'+r1(lb[2]/avg)+'@'+lb[1]+'封死'+close+'·次日承接预期+'};
+    }else{
+      var idx=0;for(var w=0;w<mins.length;w++){if(mins[w][0]===lb[0]){idx=w;break;}}
+      var drift=(close-lb[1])/lb[1]*100;
+      if(drift<-1.5)return {tag:'尾盘砸盘',name:name,code:code,board:board,tail:'x'+r1(tailMax),detail:'最后爆量x'+r1(lb[2]/avg)+'@'+lb[1]+'→收盘'+close+'('+r1(drift)+'%)·次日大低开预警'};
+      return {tag:'尾盘异动',name:name,code:code,board:board,tail:'x'+r1(tailMax),detail:'爆量x'+r1(lb[2]/avg)+'@'+lb[1]+'→收盘'+close+'('+r1(drift)+'%)·向上未封死'};
+    }
+  }
+  return {tag:'平静',name:name,code:code,board:board,tail:'x'+r1(tailMax),detail:'尾盘峰x'+r1(tailMax)+'(<8)·无方向'};
+}
+
+function runPool(){
+  var raw=$('poolInput').value.trim();
+  if(!raw){log('⚠️ 先粘贴池子');return}
+  var arr;
+  try{
+    var j=JSON.parse(raw);
+    if(Array.isArray(j)){
+      arr=[];
+      for(var i=0;i<j.length;i++){
+        if(typeof j[i]==='string')arr.push({code:j[i],name:j[i]});
+        else if(j[i]&&j[i].code)arr.push({code:String(j[i].code),name:j[i].name||j[i].code,board:j[i].board||j[i].reason||''});
+      }
+    }else if(j.orders){for(var k=0;k<j.orders.length;k++)arr.push({code:j.orders[k].code,name:j.orders[k].name,board:''});}
+    else arr=[];
+  }catch(e){log('⚠️ JSON解析失败:'+e.message);return}
+  if(!arr.length){log('⚠️ 未识别出代码');return}
+  log('▶ 开始扫描·'+arr.length+'只…');
+  var out=[],idx=0;
+  function next(){
+    if(idx>=arr.length){render(out);log('✅ 扫描完成·'+arr.length+'只');return}
+    var s=arr[idx];
+    xGet('https://ifzq.gtimg.cn/appstock/app/minute/query?code='+full(s.code),function(d){
+      try{
+        var node=d.data[full(s.code)].data.data;
+        out.push(detect(node,s.code,s.name,s.board));
+      }catch(e){out.push({tag:'ERR',name:s.name,code:s.code,detail:'结构:'+e.message})}
+      idx++;setTimeout(next,350);
+    },function(err){
+      out.push({tag:'ERR',name:s.name,code:s.code,detail:err});
+      idx++;setTimeout(next,350);
+    });
+  }
+  next();
+}
+</script>
+</body>
+</html>

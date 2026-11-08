@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>分时同构匹配器 V0.1·主脑差异化</title>
+<style>
+  body{background:#0d1117;color:#c9d1d9;font-family:"Microsoft YaHei",sans-serif;margin:0;padding:12px;font-size:13px}
+  h1{font-size:17px;color:#bc8cff;margin:0 0 4px}
+  .sub{color:#8b949e;font-size:11px;margin-bottom:10px}
+  .bar{margin:8px 0}
+  button{background:#21262d;color:#bc8cff;border:1px solid #30363d;border-radius:4px;padding:6px 14px;cursor:pointer;font-size:12px}
+  button:hover{background:#30363d}
+  button.run{background:#8957e5;color:#fff;border-color:#8957e5}
+  textarea{width:98%;background:#0d1117;color:#c9d1d9;border:1px solid #30363d;border-radius:4px;padding:6px;font-size:11px;font-family:Consolas,monospace}
+  .card{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px;margin:6px 0}
+  .mt{color:#bc8cff;font-weight:bold}
+  .mcase{color:#8b949e;font-size:11px}
+  .mout{color:#d29922;font-size:11px;margin-top:2px}
+  .mwhy{color:#7ee787;font-size:11px}
+  .nm{color:#58a6ff;font-weight:bold}
+  .log{font-size:11px;color:#8b949e;max-height:60px;overflow-y:auto}
+  table{width:100%;border-collapse:collapse;font-size:11px;margin-top:6px}
+  td,th{border:1px solid #21262d;padding:3px 6px;text-align:left}
+  th{background:#161b22;color:#58a6ff}
+  .hit{background:#1a1f2a}
+</style>
+</head>
+<body>
+<h1>🐟 分时同构匹配器 V0.1</h1>
+<div class="sub">模板库9式(复盘知识参数化):金健天量多开/闽发竞价锁仓/鲁阳地天修复/浙文分歧回封/百大天地板/千金尾盘偷袭/楚天龙烂板/永臻尾盘抢筹/华天零开衰减 · 特征指纹=分钟级爆量结构</div>
+
+<div class="bar">
+  <button class="run" id="btnDemo">跑周五回测(32只内置)</button>
+  <button id="btnScan">实时扫描·粘贴池子JSON</button>
+  <label style="display:inline-block;background:#21262d;color:#bc8cff;border:1px solid #30363d;border-radius:4px;padding:6px 14px;cursor:pointer;font-size:12px">📁导入JSON文件<input type="file" id="fileIn" accept=".json,.txt" style="display:none"></label>
+</div>
+<div class="bar"><textarea id="poolIn" rows="3" placeholder='["603381","605339"] 或 [{"code":"603381","name":"永臻股份"}] 或雷达dashboard导出(读orders)·腾讯CORS直连·Win7 Firefox兼容'></textarea></div>
+<div class="bar legend">
+  <span class="mt" id="stat">模板库v0·9式</span>
+  <span class="log" id="log"></span>
+</div>
+<div id="out"></div>
+
+<script>
+// ===== 模板库v0(参数特征版·与python pattern_matcher.py v0.3对齐) =====
+var T=[
+ {k:'jt',n:'金健米业式·天量多开爆板',c:'9.18金健35开天量·次日74%大低开',
+  t:function(f){return f.firstMult>=40&&f.sealed&&f.reopenN>=3},
+  w:function(f){return '首分钟x'+Math.round(f.firstMult)+'天量+'+f.reopenN+'开'},
+  o:'天量+多开=分歧实锤·次日大低开74%·竞价<-2%弃'},
+ {k:'mf',n:'闽发式·竞价秒板锁仓',c:'11.6闽发x107竞价后全天平静',
+  t:function(f){return f.firstMult>=40&&f.sealed&&f.reopenN===0&&f.tailMax<3},
+  w:function(f){return '竞价天量x'+Math.round(f.firstMult)+'·0开·尾盘平静x'+Math.round(f.tailMax)},
+  o:'锁仓·次日竞价承接是唯一裁判(高开>3%放量=续命)'},
+ {k:'ly',n:'鲁阳式·地天修复',c:'11.6鲁阳深水-7%尾盘回封',
+  t:function(f){return f.deep&&f.tailBurst>=8&&f.sealed},
+  w:function(f){return '深水'+f.deepPct.toFixed(1)+'%+尾盘x'+Math.round(f.tailBurst)+'回封'},
+  o:'修复≠安全·次日竞价<-3%=修复失败·连坐预警'},
+ {k:'zw',n:'浙文式·盘中分歧爆量',c:'11.6浙文10:07开板爆量回封(分钟粒度开板不可见·用分歧量特征)',
+  t:function(f){return f.firstMult<40&&f.maxBurst>=20&&f.sealed&&!f.deep&&f.tailMax<8},
+  w:function(f){return '竞价x'+Math.round(f.firstMult)+'·盘中分歧x'+Math.round(f.maxBurst)+'·回封'},
+  o:'分歧后一致=主控意志·次日看竞价溢价定强弱'},
+ {k:'bd',n:'百大式·天地板结构',c:'9.10百大竞价8.8%→-3.04%收',
+  t:function(f){return f.openGap>=6&&f.closePct<0&&f.maxBurst>=10},
+  w:function(f){return '高开'+f.openGap.toFixed(1)+'%→收'+f.closePct.toFixed(1)+'%·x'+Math.round(f.maxBurst)},
+  o:'天地板=次日惯性杀'},
+ {k:'qj',n:'千金式·尾盘偷袭板',c:'9.3千金14:53首封',
+  t:function(f){return f.sealed&&f.firstSeal>='1450'},
+  w:function(f){return f.firstSeal+'才首封·偷袭'},
+  o:'尾盘偷袭·次日5成回落·14:50纪律适用'},
+ {k:'ctl',n:'楚天龙式·烂板爆量回封',c:'烂板≥5开+振幅>12%',
+  t:function(f){return f.reopenN>=5&&f.amp>=12&&f.sealed},
+  w:function(f){return f.reopenN+'开·振幅'+f.amp.toFixed(1)+'%'},
+  o:'看换手承接·量不缩=烂板出货'},
+ {k:'yz',n:'永臻式·尾盘抢筹封板',c:'11.6永臻15:00x25.7抢筹',
+  t:function(f){return f.sealed&&f.tailBurst>=8&&!f.deep&&f.firstMult>=20},
+  w:function(f){return '秒板x'+Math.round(f.firstMult)+'+尾盘x'+Math.round(f.tailBurst)+'抢筹'},
+  o:'资金抢收盘·次日竞价承接预期+·竞价>+2%可接'},
+ {k:'ht',n:'华天式·零开秒封衰减嫌疑',c:'9.26华天衰减73%·次日大低开',
+  t:function(f){return f.sealed&&f.reopenN===0&&f.tailMax<1.5&&f.firstMult<20},
+  w:function(f){return '零开秒封·无二次爆量(封单衰减需复核)'},
+  o:'零开≠锁仓·封单衰减次日核对'}
+];
+
+function full(c){return (c.indexOf('6')===0||c.indexOf('9')===0?'sh':'sz')+c}
+function xGet(url,ok,bad){
+  var x=new XMLHttpRequest();
+  x.open('GET',url,true);
+  x.onload=function(){try{ok(JSON.parse(x.responseText))}catch(e){bad('解析失败')}};
+  x.onerror=function(){bad('网络错误')};
+  x.send();
+}
+function log(m){var el=document.getElementById('log');el.innerHTML=' '+m+'<br>'+el.innerHTML}
+
+function limitOf(code, yest){
+  var r=(code.indexOf('30')===0||code.indexOf('68')===0)?1.2:(code.indexOf('8')===0||code.indexOf('4')===0||code.indexOf('92')===0)?1.3:1.1;
+  return Math.round(yest*r*100)/100;
+}
+function extract(rows, yest, code){
+  var limPx = yest? limitOf(code||'', yest) : null;
+  var mins=[],prev=0;
+  for(var i=0;i<rows.length;i++){var p=rows[i].split(' ');if(p.length>=3){mins.push({t:p[0],px:+p[1],v:+p[2]-prev});prev=+p[2]}}
+  if(!mins.length)return null;
+  var avg=0;for(var j=0;j<mins.length;j++)avg+=mins[j].v;avg/=mins.length;
+  var dayMax=0,dayMin=1e9,openPx=mins[0].px,close=mins[mins.length-1].px,yest=mins[0].px;
+  // 昨收近似=今日开盘处无昨收·用首个价格不精确 → 由调用方补qt昨收,此处退化为dayMax==close判封
+  for(var k=0;k<mins.length;k++){if(mins[k].px>dayMax)dayMax=mins[k].px;if(mins[k].px<dayMin)dayMin=mins[k].px}
+  var maxBurst=0,firstMult=mins[0].v/avg;
+  // 封后开板次数: 在涨停上的分钟序列中断次数
+  var st=0,reopen=0,firstSeal='0930',fs=false;
+  for(var n=0;n<mins.length;n++){
+    var mb=mins[n].v/avg;if(mb>maxBurst)maxBurst=mb;
+    var on2=limPx?(mins[n].px>=limPx-0.005):(mins[n].px>=dayMax*0.999);
+    if(on2&&!fs){fs=true;firstSeal=mins[n].t}
+    if(on2)st++;else if(fs&&st>0){reopen++;st=0}
+  }
+  var tail=[],t2;
+  for(t2=0;t2<mins.length;t2++){if(mins[t2].t>='1430'&&mins[t2].t<='1500')tail.push(mins[t2])}
+  var tailBurst=0,tailMax=0;
+  for(var p2=0;p2<tail.length;p2++){var tb=tail[p2].v/avg;if(tb>tailMax)tailMax=tb;if(tb>=8)tailBurst=Math.max(tailBurst,tb)}
+  var hi=0,lo=1e9;
+  return {mins:mins,avg:avg,openPx:openPx,close:close,dayMax:dayMax,dayMin:dayMin,
+    firstMult:firstMult,maxBurst:maxBurst,reopenN:reopen,firstSeal:firstSeal,
+    tailBurst:tailBurst,tailMax:tailMax,sealed:limPx?(close>=limPx-0.005):(close>=dayMax*0.999),
+    amp:(dayMax-dayMin)/yest*100,openGap:(openPx-yest)/yest*100,closePct:(close-yest)/yest*100,
+    deep:(dayMin-openPx)/openPx<-0.05,deepPct:(dayMin-openPx)/openPx*100,yest:yest};
+}
+function match(f){
+  var hits=[];
+  for(var i=0;i<T.length;i++){try{if(T[i].t(f))hits.push(T[i])}catch(e){}}
+  return hits;
+}
+function renderRow(code,name,hits,f){
+  var h='<div class="card hit"><span class="nm">'+name+'('+code+')</span> ';
+  h+='<span style="color:#8b949e;font-size:11px">爆量x'+Math.round(f.maxBurst)+'·'+f.reopenN+'开·尾盘x'+Math.round(f.tailMax)+'</span>';
+  if(!hits.length){h+='<div class="mcase">无模板命中(新结构·观察)</div>'}
+  for(var i=0;i<hits.length;i++){
+    h+='<div><span class="mt">['+hits[i].n+']</span> <span class="mwhy">'+hits[i].w(f)+'</span></div>';
+    h+='<div class="mcase">案例:'+hits[i].c+'</div><div class="mout">▸ '+hits[i].o+'</div>';
+  }
+  return h+'</div>';
+}
+function scanPool(arr){
+  document.getElementById('out').innerHTML='';
+  var idx=0,found=0;
+  function next(){
+    if(idx>=arr.length){log('✅ 完成·'+found+'/'+arr.length+'命中');return}
+    var s=arr[idx];
+    xGet('https://qt.gtimg.cn/q='+full(s.code),function(q){
+      var p=q.split('~');
+      if(p.length<50){log('⚠️ '+s.name+' 行情获取失败');idx++;setTimeout(next,200);return}
+      xGet('https://ifzq.gtimg.cn/appstock/app/minute/query?code='+full(s.code),function(d){
+        try{
+          var rows=d.data[full(s.code)].data.data;
+          var f=extract(rows,yest,s.code);
+          if(f){f.yest=+p[4];f.openGap=(f.openPx-f.yest)/f.yest*100;f.closePct=(f.close-f.yest)/f.yest*100;f.amp=(f.dayMax-f.dayMin)/f.yest*100;
+            var hits=match(f);if(hits.length)found++;
+            document.getElementById('out').insertAdjacentHTML('beforeend',renderRow(s.code,s.name||p[1],hits,f));
+          }
+        }catch(e){log('⚠️ '+s.name+' 分时解析失败')}
+        idx++;setTimeout(next,350);
+      },function(e){log('⚠️ '+s.name+' 分时获取失败');idx++;setTimeout(next,350)});
+    },function(e){log('⚠️ '+s.name+' 行情失败');idx++;setTimeout(next,350)});
+  }
+  next();
+}
+document.getElementById('fileIn').onchange=function(ev){
+  var f=ev.target.files[0]; if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    document.getElementById('poolIn').value=rd.result;
+    document.getElementById('btnScan').onclick();
+  };
+  rd.readAsText(f,'utf-8');
+};
+document.getElementById('btnScan').onclick=function(){
+  var txt=document.getElementById('poolIn').value.trim().replace(/^\uFEFF/,'');
+  if(!txt){log('⚠️ 先粘贴池子JSON或点📁导入文件');return}
+  var arr=[],j;
+  try{j=JSON.parse(txt)}catch(e){log('⚠️ JSON解析失败:'+e.message+'·前20字符:'+txt.substring(0,20));return}
+  if(Object.prototype.toString.call(j)==='[object Array]'){
+    for(var i=0;i<j.length;i++){
+      if(typeof j[i]==='string')arr.push({code:j[i],name:j[i]});
+      else if(j[i].code)arr.push({code:String(j[i].code),name:j[i].name||j[i].code});
+    }
+  }else{
+    if(j.orders){for(var k=0;k<j.orders.length;k++)if(j.orders[k].code)arr.push({code:String(j.orders[k].code),name:j.orders[k].name||j.orders[k].code})}
+    if(j.decision_orders&&j.decision_orders.orders){for(var k4=0;k4<j.decision_orders.orders.length;k4++){var o4=j.decision_orders.orders[k4];if(o4.code)arr.push({code:String(o4.code),name:o4.name||o4.code})}}
+    if(j.plan){for(var k2=0;k2<j.plan.length;k2++)if(j.plan[k2].code)arr.push({code:String(j.plan[k2].code),name:j.plan[k2].name||j.plan[k2].code})}
+  }
+  // 去重保序
+  var seen={},uniq=[];
+  for(var u=0;u<arr.length;u++){if(!seen[arr[u].code]){seen[arr[u].code]=1;uniq.push(arr[u])}}
+  arr=uniq;
+  if(!arr.length){log('⚠️ 未识别代码');return}
+  log('▶ 扫描'+arr.length+'只…');
+  scanPool(arr);
+};
+</script>
+</body>
+</html>
