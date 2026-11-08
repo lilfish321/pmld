@@ -147,21 +147,48 @@ function scanPool(arr){
   function next(){
     if(idx>=arr.length){log('✅ 完成·'+found+'/'+arr.length+'命中');return}
     var s=arr[idx];
-    xGet('https://qt.gtimg.cn/q='+full(s.code),function(q){
-      var p=q.split('~');
-      if(p.length<50){log('⚠️ '+s.name+' 行情获取失败');idx++;setTimeout(next,200);return}
-      xGet('https://ifzq.gtimg.cn/appstock/app/minute/query?code='+full(s.code),function(d){
+    var fc=full(s.code);
+    /* 昨收主源: ifzq日K(CORS开放·线上可用) · 备源: qt.gtimg.cn(本地file://可用) */
+    function gotYest(yest,nm){
+      xGet('https://ifzq.gtimg.cn/appstock/app/minute/query?code='+fc,function(d){
         try{
-          var rows=d.data[full(s.code)].data.data;
+          var rows=d.data[fc].data.data;
           var f=extract(rows,yest,s.code);
-          if(f){f.yest=+p[4];f.openGap=(f.openPx-f.yest)/f.yest*100;f.closePct=(f.close-f.yest)/f.yest*100;f.amp=(f.dayMax-f.dayMin)/f.yest*100;
+          if(f){f.yest=yest;f.openGap=(f.openPx-yest)/yest*100;f.closePct=(f.close-yest)/yest*100;f.amp=(f.dayMax-f.dayMin)/yest*100;
             var hits=match(f);if(hits.length)found++;
-            document.getElementById('out').insertAdjacentHTML('beforeend',renderRow(s.code,s.name||p[1],hits,f));
+            document.getElementById('out').insertAdjacentHTML('beforeend',renderRow(s.code,nm,hits,f));
+            idx++;setTimeout(next,350);return;
           }
-        }catch(e){log('⚠️ '+s.name+' 分时解析失败')}
+          log('⚠️ '+s.name+' 分时解析失败');
+        }catch(e){log('⚠️ '+s.name+' 分时解析失败:'+e.message)}
         idx++;setTimeout(next,350);
       },function(e){log('⚠️ '+s.name+' 分时获取失败');idx++;setTimeout(next,350)});
-    },function(e){log('⚠️ '+s.name+' 行情失败');idx++;setTimeout(next,350)});
+    }
+    xGet('https://ifzq.gtimg.cn/appstock/app/fqkline/get?param='+fc+',day,,,3,qfq',function(d){
+      try{
+        var nd=d.data[fc], arr2=(nd&&(nd.qfqday||nd.day))||[];
+        if(arr2.length>=2){
+          var yest=+arr2[arr2.length-2][2];  /* 倒数第2根收盘=昨收 */
+          gotYest(yest,s.name);
+          return;
+        }
+        log('⚠️ '+s.name+' 日K数据不足');
+      }catch(e){ log('⚠️ '+s.name+' 日K解析失败·试备源'); }
+      /* 备源: qt.gtimg.cn(本地file://可通) */
+      xGet('https://qt.gtimg.cn/q='+fc,function(q){
+        var p=q.split('~');
+        if(p.length>50){ gotYest(+p[4],p[1]); return; }
+        log('⚠️ '+s.name+' 行情获取失败(双源)');
+        idx++;setTimeout(next,200);
+      },function(e){log('⚠️ '+s.name+' 行情获取失败(双源)');idx++;setTimeout(next,200)});
+    },function(e){
+      xGet('https://qt.gtimg.cn/q='+fc,function(q){
+        var p=q.split('~');
+        if(p.length>50){ gotYest(+p[4],p[1]); return; }
+        log('⚠️ '+s.name+' 行情获取失败(双源)');
+        idx++;setTimeout(next,200);
+      },function(e2){log('⚠️ '+s.name+' 行情获取失败(双源)');idx++;setTimeout(next,200)});
+    });
   }
   next();
 }
