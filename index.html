@@ -5,12 +5,7 @@
 <script>
 (function(){
   var K='wangzai';
-  var GATE_HTML=`<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>旺仔专用版</title></head><body style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;background:#0d1117;color:#8b949e;font-size:15px;font-family:system-ui">🍼 旺仔专用版<div style="margin-top:16px"><input id="gi" type="password" placeholder="输入专属口令" onkeydown="if(event.keyCode===13)document.getElementById('gb').click()" style="background:#161b22;border:1px solid #30363d;color:#e6edf3;border-radius:8px;padding:9px 12px;font-size:15px;outline:none;text-align:center;width:150px" /><button id="gb" onclick="var v=document.getElementById('gi').value; if(v==='wangzai'){ try{localStorage.setItem('mfx_gate','wangzai');}catch(e){} location.reload(); } else { document.getElementById('gm').textContent='口令不对'; }" style="margin-left:8px;background:#1f6feb;border:none;color:#fff;border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer">进入</button></div><div id="gm" style="margin-top:10px;font-size:12px;color:#f85149;height:16px"></div><div style="margin-top:6px;font-size:11px;color:#484f58">首次输入后本机永久有效</div><div id="page8" style="display:none">
-  <div style="color:#8b949e;font-size:11px;margin:6px 0">主脑差异化工具·v0.1(11.8)·尾盘爆量=14:30后方向分类/次日承接预测 · 分时同构=历史9式匹配/历史结局+竞价判据 · 数据:腾讯m1分钟级CORS直连</div>
-  <iframe src="tail_burst.html" style="width:100%;height:520px;border:1px solid #30363d;border-radius:6px;background:#0d1117"></iframe>
-  <iframe src="pattern_match.html" style="width:100%;height:640px;border:1px solid #30363d;border-radius:6px;background:#0d1117;margin-top:8px"></iframe>
-</div>
-</body></html>`;
+  var GATE_HTML=`<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>旺仔专用版</title></head><body style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;background:#0d1117;color:#8b949e;font-size:15px;font-family:system-ui">🍼 旺仔专用版<div style="margin-top:16px"><input id="gi" type="password" placeholder="输入专属口令" onkeydown="if(event.keyCode===13)document.getElementById('gb').click()" style="background:#161b22;border:1px solid #30363d;color:#e6edf3;border-radius:8px;padding:9px 12px;font-size:15px;outline:none;text-align:center;width:150px" /><button id="gb" onclick="var v=document.getElementById('gi').value; if(v==='wangzai'){ try{localStorage.setItem('mfx_gate','wangzai');}catch(e){} location.reload(); } else { document.getElementById('gm').textContent='口令不对'; }" style="margin-left:8px;background:#1f6feb;border:none;color:#fff;border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer">进入</button></div><div id="gm" style="margin-top:10px;font-size:12px;color:#f85149;height:16px"></div><div style="margin-top:6px;font-size:11px;color:#484f58">首次输入后本机永久有效</div></body></html>`;
   var ok=false;
   try{
     var q=new URLSearchParams(location.search).get('token');
@@ -240,7 +235,7 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
 </head>
 <body>
 <div class="hd"><h1>盘面雷达 🍼 旺仔专用版 🍼 <span style="font-size:11px;color:#66708a" id="mstate"></span></h1><div style="display:flex;align-items:center;gap:8px"><button onclick="toggleTheme()" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer">🌗</button><div class="upd" id="upd">加载中…</div></div></div>
-<div class="tabs3"><span class="on" id="T0" onclick="swPage(0)">盘面情绪</span><span id="T6" onclick="swPage(6)">📰快讯</span><span id="T1" onclick="swPage(1)">板块资金</span><span id="T2" onclick="swPage(2)">我的票</span><span id="T4" onclick="swPage(4)">竞价</span><span id="T3" onclick="swPage(3)">🧮工具·历史</span><span id="T7" onclick="swPage(7)">🔴涨停池</span><span id="T8" onclick="swPage(8)">🧪主脑工具</span><span id="srcHealth" style="margin-left:auto"></span></div>
+<div class="tabs3"><span class="on" id="T0" onclick="swPage(0)">盘面情绪</span><span id="T6" onclick="swPage(6)">📰快讯</span><span id="T1" onclick="swPage(1)">板块资金</span><span id="T2" onclick="swPage(2)">我的票</span><span id="T4" onclick="swPage(4)">竞价</span><span id="T3" onclick="swPage(3)">🧰复盘工具箱</span><span id="T7" onclick="swPage(7)">🔴涨停池</span><span id="srcHealth" style="margin-left:auto"></span></div>
 
 <div id="page0">
   <div class="idx" id="idx"></div>
@@ -379,6 +374,9 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
 
   <div style="font-size:13px;font-weight:700;color:#e6edf3;margin:14px 0 8px">📊 炸板率近7日 <span style="font-size:10px;color:#66708a;font-weight:400">自动记录·打开即存</span></div>
   <div id="zb7" style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px;min-height:60px"></div>
+  <div style="font-size:11px;color:#8b949e;margin:14px 0 6px">🧪 主脑差异化工具 v0.1(11.8) · 尾盘爆量=14:30后方向分类/次日承接预测 · 分时同构=历史9式匹配/历史结局+竞价判据 · 腾讯m1分钟级直连</div>
+  <iframe src="tail_burst.html" style="width:100%;height:520px;border:1px solid #30363d;border-radius:8px;background:#0d1117"></iframe>
+  <iframe src="pattern_match.html" style="width:100%;height:640px;border:1px solid #30363d;border-radius:8px;background:#0d1117;margin-top:8px"></iframe>
   </div>
 </div>
 <div class="foot">数据源：东方财富公开接口 · 仅供参考不构成投资建议 · 记得天天好好学习 📚</div>
@@ -1268,7 +1266,7 @@ setInterval(function(){ if(!document.hidden) loadNews(); }, 60000);
 function swPage(n){
   if(n===3){ renderHomCard(); renderZB7(); }
   page=n;
-  for(var i=0;i<9;i++){
+  for(var i=0;i<8;i++){
     var tb=document.getElementById('T'+i); if(tb) tb.className=i===n?'on':'';
     var pg=document.getElementById('page'+i); if(pg) pg.style.display=i===n?'':'none';
   }
@@ -1345,7 +1343,7 @@ function mapNews(list){
   var h='<div style="color:#3ddc84;font-size:12px;font-weight:bold;margin-bottom:4px">🎯 竞价观察映射 <span style="color:#66708a;font-weight:normal;font-size:11px">消息流自动扫描·'+order.length+'条命中</span></div>';
   for(var m=0;m<order.length&&m<6;m++){
     var x=hits[order[m]];
-    h+='<div style="font-size:11px;margin:3px 0"><b style="color:#ffd23e">'+x.tag+'</b> <span style="color:#8892a8">x'+x.n+'</span> <span style="color:#c9d1d9">'+x.rule.act+'</span></div>';
+    h+='<div style="font-size:11px;margin:3px 0"><b style="color:#ffd23e">'+order[m]+'</b> <span style="color:#8892a8">x'+x.n+'</span> <span style="color:#c9d1d9">'+x.rule.act+'</span></div>';
   }
   h+='<div style="color:#66708a;font-size:10px;margin-top:3px">规则表16条v0.1·主脑事件条知识通用化·观察≠买入建议</div>';
   bar.innerHTML=h; bar.style.display='';
