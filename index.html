@@ -290,7 +290,7 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
       <div id="natMgD" style="font-size:9px;color:#4a5164">净偿还连降≥3日=去杠杆⚠</div>
     </div>
   </div>
-
+</div>
 
 
 <div id="kchart" style="display:none;position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,.72);z-index:99" onclick="closeK(event)">
@@ -387,7 +387,7 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
   <div style="font-size:13px;font-weight:700;color:#e6edf3;margin-bottom:6px">📋 明日观察卡</div>
   <button onclick="genObsCard()" style="background:#1f6feb;color:#fff;border:1px solid #1f6feb;border-radius:4px;padding:6px 14px;cursor:pointer;font-size:12px;margin-bottom:6px">🔄 聚合生成(自动复制)</button>
   <textarea id="obsCard" rows="12" style="display:none;width:100%;background:#0d1117;color:#c9d1d9;border:1px solid #30363d;border-radius:4px;padding:6px;font-size:11px;font-family:Consolas,monospace"></textarea>
-  <div style="font-size:13px;font-weight:700;color:#e6edf3;margin:10px 0 8px">🧮 打板计算器</div>
+<div style="font-size:13px;font-weight:700;color:#e6edf3;margin-bottom:8px">🧮 打板计算器</div>
   <div style="display:flex;gap:6px;margin-bottom:6px">
     <input id="calcPx" type="number" step="0.01" placeholder="现价" style="flex:1;background:#161b22;border:1px solid #30363d;color:#e6edf3;border-radius:8px;padding:8px;font-size:14px">
     <select id="calcLmt" style="background:#161b22;border:1px solid #30363d;color:#e6edf3;border-radius:8px;padding:8px;font-size:13px">
@@ -1004,19 +1004,6 @@ function drawMy(codes,map){
       }
       if(pc>=5 && (new Date().getHours()*100)>=1430) sellTags+='<span class="stag bad">兑现区·14:50纪律</span>';
       sellTags=sellTags?'<div style="margin-top:3px">'+sellTags+'</div>':'';
-      /* 1121: 持仓哨兵线+R倍数(mfx_pos) */
-      var po=(getPos())[c];
-      if(po&&po.cost){
-        var pl=(o.f2/po.cost-1)*100;
-        var stopPx=po.cost*(1+po.stopPct/100);
-        var r=pl/Math.abs(po.stopPct);
-        var rCol=r>=1?'#ff6b6b':(r>=0?'#3fb950':'#66708a');
-        var brk=pl<=po.stopPct;
-        sellTags+='<div style="margin-top:3px;font-size:10px"><span style="color:'+(brk?'#ff4d5e':'#8a93a3')+'">'+(brk?'🛑破止损·':'')+'成本'+po.cost.toFixed(2)+'·损'+stopPx.toFixed(2)+(po.takePct?'·盈'+(po.cost*(1+po.takePct/100)).toFixed(2):'')+'</span> <span style="color:'+rCol+';font-weight:600">R'+(r>=0?'+':'')+r.toFixed(1)+'</span> <span class="del" onclick="setCost(\''+c+'\')">⚙</span></div>';
-        if(brk) sellTags='<div style="background:#3d1418;border-radius:6px;padding:3px 6px;margin-top:3px;font-size:11px;color:#ff4d5e">🛑 已破止损线·卖出体系触发位·按纪律执行</div>'+sellTags;
-      } else {
-        sellTags+='<div style="margin-top:3px;font-size:10px"><span class="del" onclick="setCost(\''+c+'\')">⚙设成本→出R倍数/止损哨兵</span></div>';
-      }
       html+='<div class="mrow">'
         +'<div><span class="nm2">'+o.f14+'</span><div class="cd">'+c+' · '+lbTag+'</div>'+sellTags+'</div>'
         +'<div class="'+cls(pc)+'" style="font-size:16px;font-weight:600">'+sign(pc)+'%<div style="font-size:10px;color:#66708a;font-weight:400">现价 '+sign(o.f2)+'</div></div>'
@@ -1246,7 +1233,7 @@ function loadCurrent(){
   else if(page===4) loadAucEnh();
   else if(page===5) loadSentinel();
   else if(page===7) loadZtPool();
-  else if(page===9){} /* 国家队·natTimerCtl驱动 */
+  else if(page===9){} /* 国家队 */
   else loadMy();
 }
 /* ---------- 7x24快讯（新浪财经公开JSONP） ---------- */
@@ -1721,7 +1708,7 @@ _renderAlertUI();
 if('serviceWorker' in navigator && location.protocol==='https:'){
   try{ navigator.serviceWorker.register('./sw.js').catch(function(){}); }catch(e){}
 }
-
+setInterval(natTimerCtl,2000);
 /* ═══ 1121增强: B持仓哨兵/R倍数 C异动雷达 D明日观察卡 ═══ */
 function getPos(){ try{ return JSON.parse(localStorage.getItem('mfx_pos')||'{}'); }catch(e){ return {}; } }
 function setPos(p){ try{ localStorage.setItem('mfx_pos',JSON.stringify(p)); }catch(e){} }
@@ -1960,7 +1947,6 @@ function natTimerCtl(){ if(page===9){ if(!_natTimer) _natTimer=setInterval(funct
 try{ var _oldSwPage=swPage; }catch(e){}
 setInterval(natTimerCtl,2000);
 /* 嵌入数据标记: __NAT_OK__ */
-setInterval(natTimerCtl,2000);
 </script>
 </body>
 </html>
