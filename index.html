@@ -235,7 +235,7 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
 </head>
 <body>
 <div class="hd"><h1>盘面雷达 🍼 旺仔专用版 🍼 <span style="font-size:11px;color:#66708a" id="mstate"></span></h1><div style="display:flex;align-items:center;gap:8px"><button onclick="toggleTheme()" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer">🌗</button><div class="upd" id="upd">加载中…</div></div></div>
-<div class="tabs3"><span class="on" id="T0" onclick="swPage(0)">盘面情绪</span><span id="T6" onclick="swPage(6)">📰快讯</span><span id="T1" onclick="swPage(1)">板块资金</span><span id="T2" onclick="swPage(2)">我的票</span><span id="T4" onclick="swPage(4)">竞价</span><span id="T5" onclick="swPage(5)">🔥涨停哨兵</span><span id="T7" onclick="swPage(7)">🔴涨停池</span><span id="T9" onclick="swPage(9)">🛡国家队</span><span id="srcHealth" style="margin-left:auto"></span></div>
+<div class="tabs3"><span class="on" id="T0" onclick="swPage(0)">盘面情绪</span><span id="T6" onclick="swPage(6)">📰快讯</span><span id="T1" onclick="swPage(1)">板块资金</span><span id="T2" onclick="swPage(2)">我的票</span><span id="T4" onclick="swPage(4)">竞价</span><span id="T3" onclick="swPage(3)">🧰复盘工具箱</span><span id="T7" onclick="swPage(7)">🔴涨停池</span><span id="T9" onclick="swPage(9)">🛡国家队</span><span id="srcHealth" style="margin-left:auto"></span></div>
 
 <div id="page0">
   <div class="idx" id="idx"></div>
@@ -243,6 +243,7 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
   <div style="display:flex;justify-content:flex-end;padding:0 14px 4px"></div>
   <div id="eventBar" style="display:none"></div>
   <div class="thermo" id="thermo"></div>
+  <div id="thermoBar" style="padding:0 14px"></div>
   <div class="hint" id="thint"></div>
   <div class="secttl">⚡ 当日主战场（概念资金Top10+题材库标注，动态）</div>
   <div class="camps" id="camps"></div>
@@ -271,17 +272,17 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
 </div>
 
 <div id="page9" style="display:none">
-  <div class="secttl">🛡 核心宽基ETF动向 · 20只核心宽基ETF <span style="font-size:9px;color:#4a5164">公开源直连·30秒刷新·独立于外部看板</span><button onclick="natLoad(true)" style="background:#12233d;border:1px solid #2a3142;color:#8ab4ff;border-radius:6px;padding:1px 7px;font-size:9px;cursor:pointer;vertical-align:middle;margin-left:8px">刷新</button></div>
+  <div class="secttl">🛡 国家队动向 · 20只核心宽基ETF <span style="font-size:9px;color:#4a5164">公开源直连·30秒刷新·独立于外部看板</span><button onclick="natLoad(true)" style="background:#12233d;border:1px solid #2a3142;color:#8ab4ff;border-radius:6px;padding:1px 7px;font-size:9px;cursor:pointer;vertical-align:middle;margin-left:8px">刷新</button></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px">
-    <div style="background:#10141c;border:1px solid #1f2a3a;border-radius:10px;padding:10px 12px"><div style="font-size:11px;color:#8a93a3">📊 宽基ETF强度(20只累计) <b id="natTotal" style="color:#ffd23e;font-size:15px">—</b></div><div id="natVs" style="font-size:10px;color:#8a93a3;margin-top:2px">vs昨日: —</div><div id="natMult" style="font-size:10px">历史强度: —</div><div id="natPct" style="font-size:10px;color:#4a5164">历史分位: —</div></div>
+    <div style="background:#10141c;border:1px solid #1f2a3a;border-radius:10px;padding:10px 12px"><div style="font-size:11px;color:#8a93a3">📊 护盘强度(20只累计) <b id="natTotal" style="color:#ffd23e;font-size:15px">—</b></div><div id="natVs" style="font-size:10px;color:#8a93a3;margin-top:2px">vs昨日: —</div><div id="natMult" style="font-size:10px">历史强度: —</div><div id="natPct" style="font-size:10px;color:#4a5164">历史分位: —</div></div>
     <div style="background:#10141c;border:1px solid #1f2a3a;border-radius:10px;padding:10px 12px"><div style="font-size:11px;color:#8a93a3">🎯 尾盘爆量(当前−14:30累计)</div><div id="natTail" style="font-size:15px;color:#ffd23e;font-weight:700">—</div><div style="font-size:9px;color:#4a5164" id="natTailN">阈值500亿 · 14:30前显示等待</div></div>
-    <div style="background:#10141c;border:1px solid #1f2a3a;border-radius:10px;padding:10px 12px"><div style="font-size:11px;color:#8a93a3">⚖️ 大小盘结构(大盘系:中小盘系成交比)</div><div id="natTilt" style="font-size:15px;font-weight:700">—</div><div id="natTiltN" style="font-size:9px;color:#4a5164">只护大不护小=指数稳·个股风险</div></div>
+    <div style="background:#10141c;border:1px solid #1f2a3a;border-radius:10px;padding:10px 12px"><div style="font-size:11px;color:#8a93a3">⚖️ 护盘方向(大盘系:中小盘系成交比)</div><div id="natTilt" style="font-size:15px;font-weight:700">—</div><div id="natTiltN" style="font-size:9px;color:#4a5164">只护大不护小=指数稳·个股风险</div></div>
     <div style="background:#10141c;border:1px solid #1f2a3a;border-radius:10px;padding:10px 12px"><div style="font-size:11px;color:#8a93a3">☢ 中证1000雪球敲入距离</div><div id="natCsi" style="font-size:15px;font-weight:700">—</div><div style="font-size:9px;color:#4a5164">5373=黄警 · 5090=第二波敲入潮红警</div></div>
   </div>
   <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:8px;padding:8px 12px;align-items:start">
     <div><div style="font-size:10px;color:#4a5164;margin-bottom:3px">分只明细 · 名称贴近资金 · 条形=相对规模 · 点击行看占比</div><div id="natList" style="background:#0d1117;border:1px solid #1a2230;border-radius:8px;padding:6px 10px;font-size:11px;color:#8a93a3">加载中…</div></div>
     <div style="background:#10141c;border:1px solid #1f2a3a;border-radius:10px;padding:10px 12px">
-      <div style="font-size:11px;color:#ffd23e;font-weight:600">🧭 简要解读</div>
+      <div style="font-size:11px;color:#ffd23e;font-weight:600">🧭 护盘解读(规则引擎)</div>
       <div id="natRead" style="font-size:10.5px;color:#c8d0e0;line-height:1.7;margin-top:6px">加载中…</div>
       <div style="border-top:1px solid #1f2a3a;margin:8px 0"></div>
       <div style="font-size:11px;color:#8a93a3">💳 两融余额(东财官方口径)</div>
@@ -305,6 +306,7 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
 
 <div id="page6" style="display:none">
   <div class="aqstate" id="newsState">🟢 新浪财经 · 7×24 · 60秒自动刷新</div>
+  <div id="mapBar" style="display:none;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:8px 10px;margin:6px 14px"></div>
   <div id="newsBox"><div class="empty">加载中…</div></div>
 </div>
 
@@ -330,7 +332,14 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
 </div>
 
 <div id="page2" style="display:none">
-  <div class="myadd"><input id="codeIn" type="tel" maxlength="6" placeholder="输入6位代码，如 002935" onkeydown="if(event.key==='Enter')addStock()"><button onclick="addStock()">添加</button></div>
+  <div style="display:flex;align-items:center;gap:10px;padding:8px 12px 0;font-size:12px;flex-wrap:wrap">
+  <span style="font-weight:700;color:#f0883e">⚡异动雷达</span>
+  <label style="cursor:pointer;color:#8a93a3"><input type="checkbox" onchange="toggleRadar(this)"> 开</label>
+  <label style="cursor:pointer;color:#8a93a3"><input type="checkbox" onchange="toggleRadSnd(this)"> 🔊声音</label>
+  <span id="radStat" style="color:#4a5164">未启动</span>
+</div>
+<div id="radLog" style="padding:2px 12px 6px"></div>
+<div class="myadd"><input id="codeIn" type="tel" maxlength="6" placeholder="输入6位代码，如 002935" onkeydown="if(event.key==='Enter')addStock()"><button onclick="addStock()">添加</button></div>
   
   <div id="alertCfg" style="display:flex;gap:6px;padding:0 14px 8px;align-items:center;font-size:12px">
     <span style="color:#8892a8">🔔预警</span>
@@ -338,16 +347,26 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
     <button id="alertBtn" onclick="toggleAlert()" style="background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:6px;padding:4px 10px;cursor:pointer">关闭</button>
     <span id="alertState" style="color:#66708a;font-size:11px"></span>
   </div><div style="display:flex;gap:6px;padding:0 14px 8px;align-items:center">
-    <button onclick="document.getElementById('_impFile').click()" style="flex:1;background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:6px 0;font-size:12px;cursor:pointer">📂 导入恢复</button>
+    <button onclick="document.getElementById('_impFile').click()" style="flex:1;background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:6px 0;font-size:12px;cursor:pointer">📂 导入自选</button>
+    <button onclick="expMyJson()" style="flex:1;background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:6px 0;font-size:12px;cursor:pointer">💾 导出自选</button>
+    <input type="file" id="_impFile" accept=".json" style="display:none" onchange="impMy(this)">
     </div>
   <div class="rgbar" id="rgbar"></div>
   <div class="legend" id="legend"></div>
+  <div id="coachCard"></div>
   <div id="mylist"></div>
+  <div style="display:flex;align-items:center;padding:10px 14px 0;gap:10px">
+    <div class="secttl" style="margin:0">🔥 涨停哨兵 <b id="senN"></b></div>
+    <button onclick="toggleSentinel()" id="senBtn" style="margin-left:auto;background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer">开启巡检</button>
+  </div>
+  <div class="hint" id="senHint">盯自选里的涨停票：💥炸板 / 🟡封单衰减 / 🟢回封，60秒巡检（弹窗+声音）。封单衰减=较当日峰值。</div>
+  <div class="secttl">📌 我的涨停票 <span style="font-weight:400;font-size:10px;color:#66708a">（自选∩今日涨停池）</span></div>
+  <div id="senMy"><div class="empty">—</div></div>
 </div>
 
-<div id="page3" style="display:none"></div>
 
 <div id="page4" style="display:none">
+  <div style="padding:8px 12px 0"><div style="font-size:13px;font-weight:700;color:#e6edf3;margin-bottom:6px">⚡ 竞价异动榜 <span style="font-size:10px;color:#66708a;font-weight:400">昨日涨停Top30·竞价时段自动刷新</span></div><div id="aucRank"><span style="color:#66708a;font-size:11px">加载中…</span></div></div>
   <div class="aqstate" id="aqState">—</div>
   <div id="sellClock" style="display:none"></div>
   <div class="secttl">⭐ 我的票竞价（9:25后有效）</div>
@@ -362,20 +381,36 @@ body.light .nrow.nred .ntime{ color:#b06a6a; }
   <div id="aqTop"><div class="empty">—</div></div>
 </div>
 
-<div id="page5" style="display:none">
-  <div style="display:flex;align-items:center;padding:10px 14px 0;gap:10px">
-    <div class="secttl" style="margin:0">🔥 涨停哨兵 <b id="senN"></b></div>
-    <button onclick="toggleSentinel()" id="senBtn" style="margin-left:auto;background:#171c26;border:1px solid #2a3142;color:#8892a8;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer">开启巡检</button>
-  </div>
-  <div class="hint" id="senHint">盯自选里的涨停票：💥炸板 / 🟡封单衰减 / 🟢回封，60秒巡检（浏览器弹窗+声音）。封单衰减=较当日峰值。</div>
-  <div class="secttl">📌 我的涨停票 <span style="font-weight:400;font-size:10px;color:#66708a">（自选∩今日涨停池）</span></div>
-  <div id="senMy"><div class="empty">—</div></div>
-  <div class="secttl">🧱 封单榜Top20 <span style="font-weight:400;font-size:10px;color:#66708a">（点名称看K线小窗）</span></div>
-  <div id="senPool"><div class="empty">—</div></div>
-  <div class="secttl">⚡ 今日异动记录</div>
-  <div id="senLog"><div class="empty">—</div></div>
-</div>
 
+<div id="page3" style="display:none">
+  <div style="padding:10px 12px">
+  <div style="font-size:13px;font-weight:700;color:#e6edf3;margin-bottom:6px">📋 明日观察卡</div>
+  <button onclick="genObsCard()" style="background:#1f6feb;color:#fff;border:1px solid #1f6feb;border-radius:4px;padding:6px 14px;cursor:pointer;font-size:12px;margin-bottom:6px">🔄 聚合生成(自动复制)</button>
+  <textarea id="obsCard" rows="12" style="display:none;width:100%;background:#0d1117;color:#c9d1d9;border:1px solid #30363d;border-radius:4px;padding:6px;font-size:11px;font-family:Consolas,monospace"></textarea>
+  <div style="font-size:13px;font-weight:700;color:#e6edf3;margin:10px 0 8px">🧮 打板计算器</div>
+  <div style="display:flex;gap:6px;margin-bottom:6px">
+    <input id="calcPx" type="number" step="0.01" placeholder="现价" style="flex:1;background:#161b22;border:1px solid #30363d;color:#e6edf3;border-radius:8px;padding:8px;font-size:14px">
+    <select id="calcLmt" style="background:#161b22;border:1px solid #30363d;color:#e6edf3;border-radius:8px;padding:8px;font-size:13px">
+      <option value="10">10cm主板</option><option value="20">20cm创科</option><option value="30">30cm北交</option><option value="5">5cmST</option>
+    </select>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:8px">
+    <input id="calcCap" type="number" placeholder="本金(万,选填)" style="flex:1;background:#161b22;border:1px solid #30363d;color:#e6edf3;border-radius:8px;padding:8px;font-size:14px">
+    <input id="calcSeal" type="number" placeholder="封单额(亿,选填)" style="flex:1;background:#161b22;border:1px solid #30363d;color:#e6edf3;border-radius:8px;padding:8px;font-size:14px">
+  </div>
+  <button onclick="calcBoard()" style="width:100%;background:#238636;color:#fff;border:0;border-radius:8px;padding:9px;font-size:14px;font-weight:700">计算</button>
+  <div id="calcOut" style="margin-top:8px;font-size:12px;color:#c9d1d9;line-height:1.9;background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px;min-height:40px">输入现价后点计算</div>
+
+  <div style="font-size:13px;font-weight:700;color:#e6edf3;margin:14px 0 8px">🧬 历史同构统计 <span style="font-size:10px;color:#66708a;font-weight:400">公开统计层·每周随预案更新</span></div>
+  <div id="homCard" style="font-size:12px;color:#c9d1d9;line-height:1.8;background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px">加载中…</div>
+
+  <div style="font-size:13px;font-weight:700;color:#e6edf3;margin:14px 0 8px">📊 炸板率近7日 <span style="font-size:10px;color:#66708a;font-weight:400">自动记录·打开即存</span></div>
+  <div id="zb7" style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:10px;min-height:60px"></div>
+  <div style="font-size:11px;color:#8b949e;margin:14px 0 6px">🧪 主脑差异化工具 v0.1(11.8) · 尾盘爆量=14:30后方向分类/次日承接预测 · 分时同构=历史9式匹配/历史结局+竞价判据 · 腾讯m1分钟级直连</div>
+  <iframe src="tail_burst.html" style="width:100%;height:520px;border:1px solid #30363d;border-radius:8px;background:#0d1117"></iframe>
+  <iframe src="pattern_match.html" style="width:100%;height:640px;border:1px solid #30363d;border-radius:8px;background:#0d1117;margin-top:8px"></iframe>
+  </div>
+</div>
 <div class="foot">数据源：东方财富公开接口 · 仅供参考不构成投资建议 · 记得天天好好学习 📚</div>
 
 <script>
@@ -519,6 +554,7 @@ function loadMood(){
       _dtData=dt||[];
       renderIdx(idx);
       renderThermo(zt,dt,zb,idx);
+      try{ var _ml=0; (zt||[]).forEach(function(o){ if(o.lbc>_ml) _ml=o.lbc; }); moodSave((zt||[]).length, (zb||[]).length, (dt||[]).length, _ml); }catch(e){}
       renderCamps(sec);
       renderLadder(zt||[]);
       renderDT(dt||[]);
@@ -565,6 +601,27 @@ function renderThermo(zt,dt,zb,idx){
   if(zt && zt.length>=80) hints.push('🔥涨停80+ 情绪活跃');
   if(zt && dt && zt.length>0 && zt.length<40 && dt.length<10) hints.push('涨停<40 窄幅震荡，重个股轻板块');
   document.getElementById('thint').innerHTML=hints.join('<br>');
+  /* V3.1: 真温度计渐变条(涨跌家数下方独立行) */
+  var tz = zt ? Math.min(zt.length, 110) : null;
+  var zones = [['冰点',0,25,'#5b8def'],['低位',25,45,'#3ddc84'],['正常',45,70,'#ffd23e'],['高位',70,100,'#ff9f43'],['过热',100,110,'#ff5a5a']];
+  var cur = null;
+  zones.forEach(function(z){ if(tz!==null && tz>=z[1] && (tz<z[2] || (z[0]==='过热'&&tz>=100))) cur = z; });
+  var pos = tz!==null ? Math.min(97, Math.max(1.5, tz/110*100)) : null;
+  var bar = '<div style="margin:8px 0 2px">';
+  bar += '<div style="position:relative;height:14px;border-radius:7px;background:linear-gradient(90deg,#5b8def 0%,#3ddc84 23%,#ffd23e 41%,#ff9f43 64%,#ff5a5a 82%,#ff2d2d 100%);box-shadow:0 1px 4px rgba(0,0,0,.4)">';
+  if(pos!==null){
+    bar += '<div style="position:absolute;left:'+pos+'%;top:-4px;width:4px;height:22px;background:#fff;border-radius:2px;box-shadow:0 0 6px #fff,0 0 3px #000"></div>';
+    bar += '<div style="position:absolute;left:'+pos+'%;top:-20px;transform:translateX(-50%);font-size:11px;font-weight:700;color:#fff;background:#000a;padding:1px 7px;border-radius:6px;white-space:nowrap">🌡 '+tz+'家</div>';
+  }
+  bar += '</div><div style="display:flex;justify-content:space-between;font-size:10px;margin-top:3px">';
+  zones.forEach(function(z){
+    var on = cur && z[0]===cur[0];
+    bar += '<span style="color:'+(on?z[3]:'#4a5160')+';font-weight:'+(on?'700':'400')+'">'+z[0]+'</span>';
+  });
+  bar += '</div>';
+  if(cur) bar += '<div style="font-size:10.5px;color:'+cur[3]+';margin-top:2px">当前情绪区间: <b>'+cur[0]+'</b>'+(tz!==null?(' (涨停'+tz+'家)'):'')+'</div>';
+  bar += '</div>';
+  var tb = document.getElementById('thermoBar'); if(tb) tb.innerHTML = bar;
 }
 function cell(l,v,c){ return '<div class="tg"><div class="l">'+l+'</div><div class="v '+c+'">'+v+'</div></div>'; }
 function renderCamps(list){
@@ -737,18 +794,165 @@ function tgS(i){
   d.style.display = d.style.display==='block'?'none':'block';
   openRow = d.style.display==='block'?i:null;
 }
+
+/* ---------- 旺仔V3.0: 打板计算器+同构统计+7日曲线+竞价排序榜 ---------- */
+var HOMO_CARD={"fp":"10.9: 涨停69/炸16.9%/跌8/高9板","top":[{"d":"2026-01-20","sim":82,"nxt":"次日+22只·上证+0.08%"},{"d":"2025-11-12","sim":71,"nxt":"次日+32只·上证+0.73%"},{"d":"2025-09-22","sim":71,"nxt":"次日-18只·上证-0.18%(分歧样本)"}],"stat":"历史同构日次日涨停扩散67% — 公开统计,非判断"};
+function calcBoard(){
+  var px=parseFloat(document.getElementById('calcPx').value);
+  var lmt=parseFloat(document.getElementById('calcLmt').value);
+  var cap=parseFloat(document.getElementById('calcCap').value);
+  var seal=parseFloat(document.getElementById('calcSeal').value);
+  var out=document.getElementById('calcOut');
+  if(!px){ out.innerHTML='<span style="color:#ff6b6b">先输入现价</span>'; return; }
+  var zt=Math.round(px*(1+lmt/100)*100)/100;
+  var l='';
+  l+='今日涨停价 <b style="color:#ff8a9a;font-size:15px">'+zt.toFixed(2)+'</b> (+'+lmt+'%)<br>';
+  l+='次日2板价 '+ (Math.round(zt*(1+lmt/100)*100)/100).toFixed(2) +' · 3板价 '+(Math.round(zt*Math.pow(1+lmt/100,2)*100)/100).toFixed(2)+'<br>';
+  l+='-2%止损位 <b style="color:#6fe08f">'+(Math.round(px*0.98*100)/100).toFixed(2)+'</b> · -5%位 '+(Math.round(px*0.95*100)/100).toFixed(2)+'<br>';
+  l+='买入1手需 '+Math.round(zt*100)+'元';
+  if(cap){ var amt=cap*10000; l+='<br>'+cap+'万本金: 3成'+Math.round(amt*0.3/zt/100)+'股 · 5成'+Math.round(amt*0.5/zt/100)+'股 · 满仓'+Math.round(amt/zt/100)+'股'; }
+  if(seal){ l+='<br>封单'+seal+'亿: 封成比=封单/当日成交, >0.3强 · <0.1弱'; }
+  out.innerHTML=l;
+}
+function renderHomCard(){
+  var el=document.getElementById('homCard'); if(!el) return;
+  var h='<div style="color:#8a93a3">'+HOMO_CARD.fp+'</div>';
+  HOMO_CARD.top.forEach(function(t){
+    var c=t.nxt.indexOf('-')>=0?'#ff6b6b':'#3ddc84';
+    h+='<div>'+t.d+' <b style="color:#ffd23e">'+t.sim+'%</b> → <span style="color:'+c+'">'+t.nxt+'</span></div>';
+  });
+  h+='<div style="color:#66708a;margin-top:3px">'+HOMO_CARD.stat+'</div>';
+  el.innerHTML=h;
+}
+function moodLog(){ try{ return JSON.parse(localStorage.getItem('wz_mood')||'{}'); }catch(e){ return {}; } }
+function moodSave(zt,zb,dt,maxl){
+  try{
+    var log=moodLog(); var d=new Date();
+    var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    if(!log[key]) log[key]={zt:zt,zb:zb,dt:dt,maxl:maxl};
+    var keys=Object.keys(log).sort();
+    while(keys.length>30){ delete log[keys.shift()]; keys=Object.keys(log).sort(); }
+    localStorage.setItem('wz_mood',JSON.stringify(log));
+  }catch(e){}
+}
+function renderZB7(){
+  var el=document.getElementById('zb7'); if(!el) return;
+  var log=moodLog(); var keys=Object.keys(log).sort().slice(-7);
+  if(!keys.length){ el.innerHTML='<span style="color:#66708a;font-size:11px">暂无历史——每个交易日打开本页自动记录,7日后出曲线</span>'; return; }
+  var h='', maxr=0;
+  keys.forEach(function(k){ var o=log[k]; var r=o.zt+o.zb>0? o.zb/(o.zt+o.zb)*100 :0; if(r>maxr)maxr=r; });
+  keys.forEach(function(k){
+    var o=log[k]; var r=o.zt+o.zb>0? o.zb/(o.zt+o.zb)*100 :0;
+    var hgt=Math.max(4, Math.round(r/maxr*56));
+    var col=r>40?'#ff6b6b':r>25?'#ffd23e':'#3ddc84';
+    h+='<div style="display:inline-block;text-align:center;margin:0 5px"><div style="font-size:9px;color:#66708a">'+r.toFixed(0)+'%</div><div style="width:22px;height:'+hgt+'px;background:'+col+';border-radius:3px 3px 0 0"></div><div style="font-size:8.5px;color:#66708a">'+k.slice(5)+'</div></div>';
+  });
+  el.innerHTML='<div style="display:flex;align-items:flex-end">'+h+'</div>';
+}
+
+function loadAucEnh(){
+  loadAuction();
+  if(document.getElementById("aucRank")) loadAucRank();
+  if(_aucTimer) clearInterval(_aucTimer);
+  _aucTimer=setInterval(function(){ var t=new Date().getHours()*100+new Date().getMinutes(); if(t>=915&&t<=926) loadAucRank(); }, 15000);
+}
+
+var _aucTimer=null, _aucSort=0;
+function ensureYztPool(cb){
+  if(_yZTPool && _yZTPool.length){ cb(_yZTPool); return; }
+  tryFetchEX('/getTopicZTPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=300&sort=fbt%3Aasc&date='+lastTradeDay().replace(/-/g,'')).then(function(pd){
+    _yZTPool=((pd.data||{}).pool)||[]; cb(_yZTPool);
+  }).catch(function(){ cb([]); });
+}
+function loadAucRank(){
+  var el=document.getElementById('aucRank'); if(!el) return;
+  el.innerHTML='<span style="color:#66708a;font-size:11px">拉取昨日涨停池…</span>';
+  ensureYztPool(function(z){
+    aucRankRender(z);
+  });
+}
+function aucRankRender(z){
+  var el=document.getElementById('aucRank'); if(!el) return;
+  if(!z.length){ el.innerHTML='<span style="color:#66708a;font-size:11px">暂无昨日涨停池数据</span>'; return; }
+  var codes=z.slice(0,30).map(function(o){return o.c;});
+  var q=codes.map(function(c){ return (c.charAt(0)==='6'?'sh':(c.charAt(0)==='8'||c.charAt(0)==='4'?'bj':'sz'))+c; }).join(',');
+  fetchGet('https://qt.gtimg.cn/q='+q, function(txt){
+    var rows=[];
+    txt.split(';').forEach(function(line){
+      var f=line.split('=')[1]; if(!f) return; f=f.replace(/"/g,'').split('~');
+      if(f.length<46) return;
+      var pc=parseFloat(f[32]); var amt=parseFloat(f[37])*100; if(isNaN(pc)) pc=0; if(isNaN(amt)) amt=0;
+      rows.push({n:f[1], c:f[2], px:f[3], pc:pc, amt:amt});
+    });
+    if(_aucSort===1) rows.sort(function(a,b){ return b.amt-a.amt; });
+    else rows.sort(function(a,b){ return b.pc-a.pc; });
+    var h='<div style="display:flex;gap:6px;margin-bottom:5px"><span class="lf'+(_aucSort===0?' on':'')+'" onclick="_aucSort=0;loadAucRank()">按涨幅</span><span class="lf'+(_aucSort===1?' on':'')+'" onclick="_aucSort=1;loadAucRank()">按竞额</span><span style="color:#66708a;font-size:10px;align-self:center" id="aucTs"></span></div>';
+    h+='<table style="width:100%;font-size:11px;border-collapse:collapse">';
+    rows.slice(0,15).forEach(function(r,i){
+      var c=r.pc>=0?'#ff5a5a':'#3ddc84';
+      h+='<tr><td style="padding:3px;color:#66708a">'+(i+1)+'</td><td style="padding:3px">'+r.n+'</td><td style="padding:3px">'+r.px+'</td><td style="padding:3px;color:'+c+'">'+(r.pc>=0?'+':'')+r.pc.toFixed(2)+'%</td><td style="padding:3px;color:#8892a8">'+(r.amt/1e4).toFixed(0)+'万</td></tr>';
+    });
+    h+='</table>';
+    el.innerHTML=h;
+    var ts=document.getElementById('aucTs'); if(ts) ts.textContent='刷新@'+new Date().toTimeString().slice(0,8);
+  });
+}
+
 function swTab(n){ tab=n; openRow=null; document.getElementById('tb0').className=n===0?'on':''; document.getElementById('tb1').className=n===1?'on':''; loadSector(); }
 function swSort(n){ sort=n; openRow=null; for(var i=0;i<3;i++){ document.getElementById('s'+i).className=i===n?'on':''; } loadSector(); }
 
 /* ---------- Tab2: 我的票 ---------- */
 function getMy(){ try{ return JSON.parse(localStorage.getItem('mfx_stocks')||'[]'); }catch(e){ return []; } }
 function setMy(a){ try{ localStorage.setItem('mfx_stocks', JSON.stringify(a)); }catch(e){} }
+
+/* ---------- V3.1: 我的票导入/导出(修复按钮空指向) ---------- */
+function expMyJson(){
+  var a = getMy();
+  var blob = new Blob([JSON.stringify({app:'旺仔自选', date:today(), stocks:a}, null, 1)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var link = document.createElement('a');
+  link.href = url; link.download = 'wangzai_stocks_'+today()+'.json';
+  document.body.appendChild(link); link.click(); link.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 500);
+}
+function impMy(inp){
+  var f = inp.files && inp.files[0]; if(!f) return;
+  var rd = new FileReader();
+  rd.onload = function(){
+    try{
+      var d = JSON.parse(rd.result);
+      var list = d.stocks || (Array.isArray(d) ? d : null);
+      if(!list || !list.length) throw new Error('找不到stocks数组');
+      if(!confirm('导入 '+list.length+' 只自选, 追加到当前列表?')) return;
+      var have = {}; getMy().forEach(function(s){ have[String(s.c)] = 1; });
+      var add = 0;
+      list.forEach(function(s){
+        var c = String(s.c||s.code||'');
+        if(c && !have[c]){ getMy; var arr = getMy(); arr.push({c:c, n:s.n||s.name||c}); setMy(arr); have[c]=1; add++; }
+      });
+      drawMy(); alert('✅ 已导入 '+add+' 只(重复跳过)');
+    }catch(e){ alert('❌ 导入失败: '+e.message); }
+  };
+  rd.readAsText(f);
+}
 function addStock(){
   var inp=document.getElementById('codeIn'), v=(inp.value||'').trim();
   if(!/^\d{6}$/.test(v)){ alert('请输入6位数字代码'); return; }
   var a=getMy();
   if(a.indexOf(v)>=0){ inp.value=''; return; }
   a.push(v); setMy(a); inp.value=''; loadMy();
+  /* ③行为教练: 自选快照(记录加入时点+当时涨幅) */
+  try{
+    var tk=JSON.parse(localStorage.getItem('mfx_track')||'{}');
+    if(!tk[v]){ tk[v]={d:today(),pct:null,px:null};
+      fetch('https://qt.gtimg.cn/q='+(v.charAt(0)==='6'?'sh':'sz')+v).then(function(r){return r.text()}).then(function(t){
+        var p=t.split('~'); if(p.length>40){ tk[v].pct=+p[32]; tk[v].px=+p[3];
+          try{localStorage.setItem('mfx_track',JSON.stringify(tk))}catch(e){}
+          if(typeof renderCoach==='function')renderCoach(getMy(),{});
+        }});
+      try{localStorage.setItem('mfx_track',JSON.stringify(tk))}catch(e){}
+    }
+  }catch(e){}
 }
 function delStock(c){ setMy(getMy().filter(function(x){ return x!==c; })); loadMy(); }
 function loadMy(){
@@ -763,7 +967,7 @@ function loadMy(){
     /* 量比f10走独立请求：字段若不被接口支持只丢量比，不影响主列表 */
     tryFetch('/api/qt/ulist.np/get?fltt=2&invt=2&ut=bd1d9ddb04089700cf9c27f6f7426281&secids='+secids+'&fields=f10,f12').then(function(dl){
       ((dl.data&&dl.data.diff)||[]).forEach(function(x){ if(map[x.f12]) map[x.f12].f10=x.f10; });
-    }).catch(function(){}).then(function(){ drawMy(codes,map); });
+    }).catch(function(){}).then(function(){ drawMy(codes,map); renderCoach(codes,map); });
   }).catch(function(){
     document.getElementById('mylist').innerHTML='<div class="err">接口连接失败<br>请下载文件用浏览器打开</div>';
   });
@@ -800,6 +1004,19 @@ function drawMy(codes,map){
       }
       if(pc>=5 && (new Date().getHours()*100)>=1430) sellTags+='<span class="stag bad">兑现区·14:50纪律</span>';
       sellTags=sellTags?'<div style="margin-top:3px">'+sellTags+'</div>':'';
+      /* 1121: 持仓哨兵线+R倍数(mfx_pos) */
+      var po=(getPos())[c];
+      if(po&&po.cost){
+        var pl=(o.f2/po.cost-1)*100;
+        var stopPx=po.cost*(1+po.stopPct/100);
+        var r=pl/Math.abs(po.stopPct);
+        var rCol=r>=1?'#ff6b6b':(r>=0?'#3fb950':'#66708a');
+        var brk=pl<=po.stopPct;
+        sellTags+='<div style="margin-top:3px;font-size:10px"><span style="color:'+(brk?'#ff4d5e':'#8a93a3')+'">'+(brk?'🛑破止损·':'')+'成本'+po.cost.toFixed(2)+'·损'+stopPx.toFixed(2)+(po.takePct?'·盈'+(po.cost*(1+po.takePct/100)).toFixed(2):'')+'</span> <span style="color:'+rCol+';font-weight:600">R'+(r>=0?'+':'')+r.toFixed(1)+'</span> <span class="del" onclick="setCost(\''+c+'\')">⚙</span></div>';
+        if(brk) sellTags='<div style="background:#3d1418;border-radius:6px;padding:3px 6px;margin-top:3px;font-size:11px;color:#ff4d5e">🛑 已破止损线·卖出体系触发位·按纪律执行</div>'+sellTags;
+      } else {
+        sellTags+='<div style="margin-top:3px;font-size:10px"><span class="del" onclick="setCost(\''+c+'\')">⚙设成本→出R倍数/止损哨兵</span></div>';
+      }
       html+='<div class="mrow">'
         +'<div><span class="nm2">'+o.f14+'</span><div class="cd">'+c+' · '+lbTag+'</div>'+sellTags+'</div>'
         +'<div class="'+cls(pc)+'" style="font-size:16px;font-weight:600">'+sign(pc)+'%<div style="font-size:10px;color:#66708a;font-weight:400">现价 '+sign(o.f2)+'</div></div>'
@@ -1026,7 +1243,7 @@ function loadCurrent(){
   document.getElementById('mstate').textContent=marketState();
   if(page===0) loadMood();
   else if(page===1) loadSector();
-  else if(page===4) loadAuction();
+  else if(page===4) loadAucEnh();
   else if(page===5) loadSentinel();
   else if(page===7) loadZtPool();
   else if(page===9){} /* 国家队·natTimerCtl驱动 */
@@ -1051,6 +1268,7 @@ function renderNews(list){
     h+='<div class="nrow'+cls+'">'+star+'<span class="ntime">'+_esc(String(it.create_time||'').slice(5,16))+'</span>'+tn+_esc(rt)+'</div>';
   }
   box.innerHTML=h;
+  try{ mapNews(list); }catch(e){}
   var st=document.getElementById('newsState'); if(st) st.textContent='🟢 新浪财经 · 7×24 · 更新 '+String((list[0]&&list[0].create_time)||'').slice(11,16);
 }
 function loadNews(){
@@ -1092,6 +1310,7 @@ function _normThs(lst){
 }
 setInterval(function(){ if(!document.hidden) loadNews(); }, 60000);
 function swPage(n){
+  if(n===3){ renderHomCard(); renderZB7(); }
   page=n;
   for(var i=0;i<10;i++){
     var tb=document.getElementById('T'+i); if(tb) tb.className=i===n?'on':'';
@@ -1099,6 +1318,83 @@ function swPage(n){
   }
   loadCurrent();
 }
+/* ===== ③④ 主脑差异化: 自选行为教练 + 消息→竞价映射 (v0.1·11.8) ===== */
+function getTrack(){ try{ return JSON.parse(localStorage.getItem('mfx_track')||'{}'); }catch(e){ return {}; } }
+function renderCoach(codes,map){
+  var el=document.getElementById('coachCard'); if(!el) return;
+  var tk=getTrack(), codes=getMy();
+  var n=codes.length, tracked=[], fresh=0, chase=0, chaseList=[];
+  for(var i=0;i<codes.length;i++){
+    var t=tk[codes[i]];
+    if(t&&t.pct!==null&&t.pct!==undefined){
+      tracked.push(t); fresh++;
+      if(t.pct>5){ chase++; chaseList.push(codes[i]+'('+t.pct+'%)'); }
+    }
+  }
+  var h='';
+  if(!n){ el.innerHTML=''; return; }
+  h+='<div style="background:#161b22;border:1px solid #30363d;border-radius:8px;padding:8px 10px;margin:6px 14px">';
+  h+='<div style="color:#3ddc84;font-size:12px;font-weight:bold">🎓 自选行为教练 <span style="color:#66708a;font-weight:normal;font-size:11px">快照积累中(v0.1)</span></div>';
+  h+='<div style="font-size:11px;color:#c9d1d9;margin-top:4px">自选总数 <b style="color:#ffd23e">'+n+'</b> · 有快照 <b>'+fresh+'</b> · 待积累 <b style="color:#66708a">'+(n-fresh)+'</b></div>';
+  if(fresh){
+    var chasePct=Math.round(chase/fresh*100);
+    var chaseColor=chasePct>=60?'#ff6b6b':chasePct>=40?'#ffd23e':'#3ddc84';
+    h+='<div style="font-size:11px;margin-top:3px">加入时涨幅>5%(追高特征): <b style="color:'+chaseColor+'">'+chase+'/'+fresh+'('+chasePct+'%)</b>';
+    if(chaseList.length&&chase<=6) h+=' <span style="color:#66708a">'+chaseList.join(' ')+'</span>';
+    h+='</div>';
+    if(chasePct>=60) h+='<div style="font-size:11px;color:#ff6b6b;margin-top:2px">⚠️ 追高占比偏高·自选习惯偏情绪·纪律: 首板低吸>追涨</div>';
+  }else{
+    h+='<div style="font-size:11px;color:#66708a;margin-top:3px">新加自选将自动记录快照(时点+当时涨幅)·积累后输出追高/回撤审计</div>';
+  }
+  h+='</div>';
+  el.innerHTML=h;
+}
+/* ④消息→竞价映射规则表v0.1(主脑事件条知识通用化) */
+var NEWS_MAP=[
+  {kw:['寒潮','暴雪','降温','霜冻','雨雪'],tag:'❄️寒潮链',act:'燃气/热电/煤炭/羽绒服首板盯竞价·首板≥3只=新题材日·只做龙头低吸'},
+  {kw:['APEC','亚太经合'],tag:'🌏APEC',act:'11.18-19深圳·临近2-3天预热·亚太自贸+中美再会预期'},
+  {kw:['中美','关税','贝森特','何立峰','贸易磋商','经贸'],tag:'🤝中美',act:'出口链/航运/跨境电商观察·缓和=出口线修复·摩擦升级=反制主题'},
+  {kw:['降准','降息','LPR','货币政策','央行逆回购'],tag:'💰宽松',act:'大金融/地产链竞价溢价观察·高开>3%防兑现'},
+  {kw:['英伟达','OpenAI','甲骨文','CoreWeave','算力','AI算力','数据中心'],tag:'🖥️算力',act:'算力硬件竞价溢价开关:+2~5%=修复确认·>6%=兑现风险不追'},
+  {kw:['CoreWeave','财报指引','砍单'],tag:'📋AI财报',act:'CoreWeave 11.10盘后=砍单验证点·下修则算力租赁回避'},
+  {kw:['黄金','金价','COMEX'],tag:'🥇黄金',act:'黄金股高开=兑现风险·低位利好回流框架判断'},
+  {kw:['石油','原油','OPEC','地缘','红海','胡塞'],tag:'🛢️地缘',act:'油气/航运/军工观察·油价>3%异动=避险链批量'},
+  {kw:['国企改革','重组','并购','借壳'],tag:'🏭重组',act:'央企/地方国企名单盯竞价·一字板=排队观察'},
+  {kw:['固态电池','锂电','储能'],tag:'🔋锂电',act:'设备/材料扩散链·首板低吸·不做二梯队'},
+  {kw:['机器人','人形机器人','Optimus','宇树'],tag:'🤖机器人',act:'T链/减速器/丝杠竞价联动·与算力抢资金时谨慎'},
+  {kw:['集采','医保','创新药','FDA'],tag:'💊医药',act:'创新药出海链·美价锚·高开>5%=美股映射兑现'},
+  {kw:['光伏','硅片','组件','风电','新能源'],tag:'☀️新能源',act:'民主党催化+订单扩散·梯队列观察·秒板锁仓=竞价承接裁判'},
+  {kw:['低空经济','eVTOL','无人机'],tag:'🚁低空',act:'事件催化日首板盯·不做高位接力'},
+  {kw:['稀土','出口管制','制裁'],tag:'⛓️反制',act:'稀土/自主可控·摩擦升级首选·一字=情绪过热'},
+  {kw:['双十一','电商','消费券','以旧换新'],tag:'🛒消费',act:'消费/电商/零售·周末打鸡血周一接力=陷阱·弱转强才做'}
+];
+function mapNews(list){
+  var bar=document.getElementById('mapBar'); if(!bar) return;
+  var hits={}, order=[];
+  for(var i=0;i<list.length&&i<40;i++){
+    var it=list[i]||{}, txt=String((it.title||'')+(it.content||it.digest||''));
+    for(var j=0;j<NEWS_MAP.length;j++){
+      var r=NEWS_MAP[j];
+      for(var k=0;k<r.kw.length;k++){
+        if(txt.indexOf(r.kw[k])>=0){
+          if(!hits[r.tag]){ hits[r.tag]={rule:r,n:0,sample:txt.substring(0,60)}; order.push(r.tag); }
+          hits[r.tag].n++;
+          break;
+        }
+      }
+    }
+  }
+  if(!order.length){ bar.style.display='none'; return; }
+  order.sort(function(a,b){ return hits[b].n-hits[a].n; });
+  var h='<div style="color:#3ddc84;font-size:12px;font-weight:bold;margin-bottom:4px">🎯 竞价观察映射 <span style="color:#66708a;font-weight:normal;font-size:11px">消息流自动扫描·'+order.length+'条命中</span></div>';
+  for(var m=0;m<order.length&&m<6;m++){
+    var x=hits[order[m]];
+    h+='<div style="font-size:11px;margin:3px 0"><b style="color:#ffd23e">'+order[m]+'</b> <span style="color:#8892a8">x'+x.n+'</span> <span style="color:#c9d1d9">'+x.rule.act+'</span></div>';
+  }
+  h+='<div style="color:#66708a;font-size:10px;margin-top:3px">规则表16条v0.1·主脑事件条知识通用化·观察≠买入建议</div>';
+  bar.innerHTML=h; bar.style.display='';
+}
+/* ===== ③④ END ===== */
 loadCurrent();loadNews();
 setInterval(loadCurrent,30000);
 document.addEventListener('visibilitychange',function(){ if(!document.hidden){ loadCurrent(); loadNews(); } });
@@ -1425,8 +1721,129 @@ _renderAlertUI();
 if('serviceWorker' in navigator && location.protocol==='https:'){
   try{ navigator.serviceWorker.register('./sw.js').catch(function(){}); }catch(e){}
 }
-setInterval(natTimerCtl,2000);
-/* ══ V6.5.2 核心宽基ETF动向模块(自建·公开源直连·独立于外部看板) ══ */
+
+/* ═══ 1121增强: B持仓哨兵/R倍数 C异动雷达 D明日观察卡 ═══ */
+function getPos(){ try{ return JSON.parse(localStorage.getItem('mfx_pos')||'{}'); }catch(e){ return {}; } }
+function setPos(p){ try{ localStorage.setItem('mfx_pos',JSON.stringify(p)); }catch(e){} }
+function setCost(code){
+  var p=getPos(); var o=p[code]||{};
+  var c=prompt('持仓成本价(留空清除):',o.cost||'');
+  if(c===null) return;
+  if(c===''){ delete p[code]; setPos(p); loadMy(); return; }
+  c=parseFloat(c); if(isNaN(c)||c<=0){ alert('成本价无效'); return; }
+  var s=prompt('止损线百分比(默认-7):',o.stopPct!==undefined?o.stopPct:-7);
+  if(s===null) return;
+  var t=prompt('止盈线百分比(可选,如 15):',o.takePct!==undefined?o.takePct:'');
+  if(t===null) return;
+  p[code]={cost:c,stopPct:parseFloat(s)||-7,takePct:t!==''?parseFloat(t):null};
+  setPos(p); loadMy();
+}
+/* C. 异动雷达 */
+var _radTimer=null,_radPrev={},_radSnd=false;
+function getRadLog(){ var d=new Date(); var k='mfx_radlog_'+d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); try{ return JSON.parse(localStorage.getItem(k)||'[]'); }catch(e){ return []; } }
+function pushRadLog(txt){ var a=getRadLog(); var d=new Date(); a.unshift(('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+' '+txt); a=a.slice(0,20); var k='mfx_radlog_'+d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); try{ localStorage.setItem(k,JSON.stringify(a)); }catch(e){} renderRadLog(); }
+function renderRadLog(){
+  var box=document.getElementById('radLog'); if(!box) return;
+  var a=getRadLog();
+  box.innerHTML=a.length?a.slice(0,5).map(function(x){ return '<div style="font-size:11px;color:#f0883e;padding:1px 0">⚡ '+x+'</div>'; }).join(''):'<div style="font-size:11px;color:#4a5164">暂无异动·盘中自动监控中</div>';
+}
+function radarBeep(){
+  if(!_radSnd) return;
+  try{ var ctx=new (window.AudioContext||window.webkitAudioContext)(); var o=ctx.createOscillator(); var g=ctx.createGain();
+    o.connect(g); g.connect(ctx.destination); o.frequency.value=880; g.gain.value=0.08;
+    o.start(); o.stop(ctx.currentTime+0.15); setTimeout(function(){ try{ctx.close();}catch(e){} },300);
+  }catch(e){}
+}
+function radarTick(){
+  var codes=getMy(); if(!codes.length) return;
+  var pre=codes.map(function(c){ return (/^[36]/.test(c)?'sh':'sz')+c; }).join(',');
+  var s=document.createElement('script');
+  s.src='https://qt.gtimg.cn/q='+pre+'&r='+Date.now();
+  s.onload=function(){
+    var d=new Date(),hhmm=d.getHours()*100+d.getMinutes();
+    var pos=getPos();
+    try{
+      codes.forEach(function(c){
+        var fc=(/^[36]/.test(c)?'sh':'sz')+c;
+        var v=window['v_'+fc]; if(!v) return;
+        var f=v.split('~');
+        var px=parseFloat(f[3]), nm=f[1]||c, lb=parseFloat(f[49]);
+        if(isNaN(px)||px<=0) return;
+        var prev=_radPrev[c];
+        if(prev){
+          var dv=(px/prev.px-1)*100;
+          if(hhmm>=930&&hhmm<=1500&&Math.abs(dv)>=1.0){
+            var txt=nm+' '+c+' 60秒'+(dv>0?'拉升+':'跳水')+dv.toFixed(1)+'% 现价'+px+(lb?'·量比'+lb.toFixed(1):'');
+            pushRadLog(txt); radarBeep();
+          }
+          if(prev.spike&&!prev.warned&&dv<0.3&&prev.dv>=1.5&&hhmm>=930&&hhmm<=1500){
+            pushRadLog(nm+' '+c+' 冲高回落·脉冲后回吐 现价'+px); radarBeep();
+            prev.warned=true;
+          }
+        }
+        _radPrev[c]={px:px,dv:prev?((px/prev.px-1)*100):0,spike:(prev&&((px/prev.px-1)*100)>=1.5)};
+        /* 破止损检查 */
+        var o=pos[c];
+        if(o&&o.cost){
+          var pl=(px/o.cost-1)*100;
+          if(pl<=o.stopPct&&!o._brk){ pushRadLog('🛑 '+nm+' '+c+' 破止损线('+pl.toFixed(1)+'%≤'+o.stopPct+'%)·成本'+o.cost); radarBeep(); o._brk=true; setPos(pos); }
+          if(pl>o.stopPct+0.5&&o._brk){ o._brk=false; setPos(pos); }
+        }
+      });
+    }catch(e){}
+    document.getElementById('radStat').textContent='监控中·'+codes.length+'只·'+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+    for(var i=0;i<codes.length;i++){ var fc2=(/^[36]/.test(codes[i])?'sh':'sz')+codes[i]; try{ delete window['v_'+fc2]; }catch(e){} }
+    try{ s.parentNode.removeChild(s); }catch(e){}
+  };
+  s.onerror=function(){ try{ s.parentNode.removeChild(s); }catch(e){} };
+  document.head.appendChild(s);
+}
+function toggleRadar(el){
+  if(el.checked){
+    if(!_radTimer){ radarTick(); _radTimer=setInterval(radarTick,30000); document.getElementById('radStat').textContent='监控中·启动'; pushRadLog('异动雷达开启'); }
+  } else { if(_radTimer){ clearInterval(_radTimer); _radTimer=null; document.getElementById('radStat').textContent='已关闭'; pushRadLog('异动雷达关闭'); } }
+}
+function toggleRadSnd(el){ _radSnd=el.checked; }
+document.addEventListener('visibilitychange',function(){
+  if(!_radTimer) return;
+  if(document.hidden){ clearInterval(_radTimer); _radTimer=null; }
+  else { radarTick(); _radTimer=setInterval(radarTick,30000); }
+});
+/* D. 明日观察卡 */
+function genObsCard(){
+  var out=[];
+  var d=new Date(), dstr=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+  out.push('📋 明日观察卡 '+dstr);
+  out.push('═ 涨停梯队(连板≥2) ═');
+  var zt=(ztCache||[]).filter(function(z){ return z.lbc>=2; }).sort(function(a,b){ return b.lbc-a.lbc; }).slice(0,12);
+  if(zt.length) zt.forEach(function(z){ out.push('  '+z.lbc+'板 '+z.n+' '+z.c+(z._peak?'·封'+(z._peak/1e8).toFixed(1)+'亿':'')); });
+  else out.push('  (涨停池未拉取或无连板·切到涨停池tab刷新)');
+  out.push('═ 尾盘爆量异动 ═');
+  try{
+    var tb=JSON.parse(localStorage.getItem('mfx_tailburst')||'null');
+    if(tb&&tb.date===dstr){ out.push('  扫描'+tb.total+'只@'+tb.ts+'·异动'+tb.hits.length+'只:');
+      tb.hits.slice(0,10).forEach(function(x){ out.push('  ['+x.tag+'] '+x.name+' '+x.code+' '+x.detail); });
+    } else out.push('  (今日无尾爆扫描记录·在主脑工具跑一次池子)');
+  }catch(e){ out.push('  (尾爆数据读取失败)'); }
+  out.push('═ 哨兵今日日志 ═');
+  try{
+    var sl=JSON.parse(localStorage.getItem('mfx_senlog_'+dstr)||'[]');
+    if(sl.length) sl.slice(0,8).forEach(function(x){ out.push('  '+x); });
+    else out.push('  (今日无哨兵触发)');
+  }catch(e){ out.push('  (哨兵日志读取失败)'); }
+  out.push('═ 自选票 ═');
+  var my=getMy();
+  var pos=getPos();
+  if(my.length) my.forEach(function(c){ var o=pos[c]; out.push('  '+c+(o?' 成本'+o.cost+' 损'+(o.cost*(1+o.stopPct/100)).toFixed(2):'')); });
+  else out.push('  (空)');
+  out.push('── 数据截至生成时点·竞价裁决以9:25实盘为准');
+  var txt=out.join('\n');
+  document.getElementById('obsCard').textContent=txt;
+  document.getElementById('obsCard').style.display='block';
+  try{ navigator.clipboard.writeText(txt).then(function(){ },function(){ }); }catch(e){}
+}
+
+/* ══ V6.5.2 国家队动向模块(自建·公开源直连·独立于外部看板) ══ */
 var NAT_ETFS=[['510310','sh','300易'],['588000','sh','科创50'],['159915','sz','创业板'],['510300','sh','沪深300'],['563360','sh','300景'],['159352','sz','创业50'],['512100','sh','中证1000'],['159338','sz','A500基'],['510500','sh','中证500'],['159949','sz','创50华'],['588080','sh','科创易'],['510050','sh','上证50'],['510210','sh','50指数'],['159845','sz','1000E'],['159952','sz','创50基'],['159361','sz','双创50'],['512050','sh','金融'],['159633','sz','A500'],['560010','sh','1000强'],['159919','sz','300AV']];
 var NAT_HIST0={"2025-10-28":436.9,"2025-10-29":447.9,"2025-10-30":470.8,"2025-10-31":522.0,"2025-11-03":458.1,"2025-11-04":474.4,"2025-11-05":428.3,"2025-11-06":437.1,"2025-11-07":370.4,"2025-11-10":382.5,"2025-11-11":396.4,"2025-11-12":407.9,"2025-11-13":437.5,"2025-11-14":411.6,"2025-11-17":410.9,"2025-11-18":445.7,"2025-11-19":441.6,"2025-11-20":430.8,"2025-11-21":676.5,"2025-11-24":507.8,"2025-11-25":535.7,"2025-11-26":481.9,"2025-11-27":421.9,"2025-11-28":374.4,"2025-12-01":389.9,"2025-12-02":362.7,"2025-12-03":378.2,"2025-12-04":399.1,"2025-12-05":507.2,"2025-12-08":559.5,"2025-12-09":520.1,"2025-12-10":510.3,"2025-12-11":530.0,"2025-12-12":610.7,"2025-12-15":547.1,"2025-12-16":645.6,"2025-12-17":742.1,"2025-12-18":618.5,"2025-12-19":652.1,"2025-12-22":788.3,"2025-12-23":784.2,"2025-12-24":791.2,"2025-12-25":716.4,"2025-12-26":833.1,"2025-12-29":783.8,"2025-12-30":746.9,"2025-12-31":812.6,"2026-01-05":888.2,"2026-01-06":894.5,"2026-01-07":852.2,"2026-01-08":807.6,"2026-01-09":885.4,"2026-01-12":701.8,"2026-01-13":716.0,"2026-01-14":1179.0,"2026-01-15":1687.8,"2026-01-16":1726.4,"2026-01-19":1334.9,"2026-01-20":1360.7,"2026-01-21":1813.0,"2026-01-22":1406.1,"2026-01-23":1866.3,"2026-01-26":1644.1,"2026-01-27":1311.0,"2026-01-28":2118.3,"2026-01-29":1281.6,"2026-01-30":896.3,"2026-02-02":1104.4,"2026-02-03":859.9,"2026-02-04":830.2,"2026-02-05":779.7,"2026-02-06":780.7,"2026-02-09":680.2,"2026-02-10":557.7,"2026-02-11":543.6,"2026-02-12":600.0,"2026-02-13":791.8,"2026-02-24":536.7,"2026-02-25":701.3,"2026-02-26":676.7,"2026-02-27":607.0,"2026-03-02":731.0,"2026-03-03":758.9,"2026-03-04":635.5,"2026-03-05":643.0,"2026-03-06":509.1,"2026-03-09":667.7,"2026-03-10":574.5,"2026-03-11":549.4,"2026-03-12":515.4,"2026-03-13":513.8,"2026-03-16":588.2,"2026-03-17":618.1,"2026-03-18":633.1,"2026-03-19":624.9,"2026-03-20":673.4,"2026-03-23":737.4,"2026-03-24":630.9,"2026-03-25":612.6,"2026-03-26":465.6,"2026-03-27":498.6,"2026-03-30":494.8,"2026-03-31":533.4,"2026-04-01":499.7,"2026-04-02":500.9,"2026-04-03":411.1,"2026-04-07":437.3,"2026-04-08":707.8,"2026-04-09":522.5,"2026-04-10":537.1,"2026-04-13":479.3,"2026-04-14":485.4,"2026-04-15":534.2,"2026-04-16":548.2,"2026-04-17":546.4,"2026-04-20":590.5,"2026-04-21":502.2,"2026-04-22":580.2,"2026-04-23":622.6,"2026-04-24":583.1,"2026-04-27":577.0,"2026-04-28":566.7,"2026-04-29":643.7,"2026-04-30":734.9,"2026-05-06":822.1,"2026-05-07":686.3,"2026-05-08":655.4,"2026-05-11":765.3,"2026-05-12":597.5,"2026-05-13":625.5,"2026-05-14":627.9,"2026-05-15":731.8,"2026-05-18":520.6,"2026-05-19":631.0,"2026-05-20":567.2,"2026-05-21":668.1,"2026-05-22":630.3,"2026-05-25":704.5,"2026-05-26":547.9,"2026-05-27":573.2,"2026-05-28":484.7,"2026-05-29":602.4,"2026-06-01":536.5,"2026-06-02":558.7,"2026-06-03":577.6,"2026-06-04":431.2,"2026-06-05":500.8,"2026-06-08":599.5,"2026-06-09":493.5,"2026-06-10":414.6,"2026-06-11":391.6,"2026-06-12":473.1,"2026-06-15":653.6,"2026-06-16":506.9,"2026-06-17":550.8,"2026-06-18":534.7,"2026-06-22":654.0,"2026-06-23":748.3,"2026-06-24":741.1,"2026-06-25":700.2,"2026-06-26":523.6,"2026-06-29":646.5,"2026-06-30":580.0,"2026-07-01":536.3,"2026-07-02":660.3,"2026-07-03":639.7,"2026-07-06":493.7,"2026-07-07":491.0,"2026-07-08":543.8,"2026-07-09":685.2,"2026-07-10":607.4,"2026-07-13":777.9,"2026-07-14":783.5,"2026-07-15":563.3,"2026-07-16":690.0,"2026-07-17":1141.5,"2026-07-20":1244.7,"2026-07-21":1118.5,"2026-07-22":792.1,"2026-07-23":510.5,"2026-07-24":564.5,"2026-07-27":542.6,"2026-07-28":787.0,"2026-07-29":835.6,"2026-07-30":931.0,"2026-07-31":937.1,"2026-08-03":553.4,"2026-08-04":664.5,"2026-08-05":726.7,"2026-08-06":625.9,"2026-08-07":598.7,"2026-08-10":479.1,"2026-08-11":441.5,"2026-08-12":425.6,"2026-08-13":511.8,"2026-08-14":422.6,"2026-08-17":470.4,"2026-08-18":455.5,"2026-08-19":724.8,"2026-08-20":488.5,"2026-08-21":438.1,"2026-08-24":520.7,"2026-08-25":466.6,"2026-08-26":479.5,"2026-08-27":457.2,"2026-08-28":395.3,"2026-08-31":438.9,"2026-09-01":439.1,"2026-09-02":438.1,"2026-09-03":376.3,"2026-09-04":509.9,"2026-09-07":538.5,"2026-09-08":425.6,"2026-09-09":351.4,"2026-09-10":342.2,"2026-09-11":562.4,"2026-09-14":389.6,"2026-09-15":413.4,"2026-09-16":499.2,"2026-09-17":395.3,"2026-09-18":469.7,"2026-09-21":431.3,"2026-09-22":460.9,"2026-09-23":380.3,"2026-09-24":437.4,"2026-09-28":538.6,"2026-09-29":391.4,"2026-09-30":408.8,"2026-10-08":459.5,"2026-10-09":670.4,"2026-10-12":423.6,"2026-10-13":579.1,"2026-10-14":475.5,"2026-10-15":914.2,"2026-10-16":732.7,"2026-10-19":557.6,"2026-10-20":647.2,"2026-10-21":549.7,"2026-10-22":999.3,"2026-10-23":1091.4,"2026-10-26":897.9,"2026-10-27":670.3,"2026-10-28":716.6,"2026-10-29":857.6,"2026-10-30":874.7,"2026-11-02":1056.1,"2026-11-03":1539.0,"2026-11-04":1306.2,"2026-11-05":1045.2,"2026-11-06":808.0,"2026-11-09":601.9,"2026-11-10":658.8,"2026-11-11":753.2,"2026-11-12":860.8,"2026-11-13":796.6,"2026-11-16":820.5,"2026-11-17":889.7,"2026-11-18":770.3,"2026-11-19":1091.4,"2026-11-20":1543.7};
 var NAT_LINES={hi:5373,lo:5090};
@@ -1476,7 +1893,7 @@ function natLoad(force){
     var mult=avg5?tot/avg5:0;
     var multEl=document.getElementById('natMult');
     if(mult){ multEl.innerHTML='历史强度: <b style="color:'+(mult>=3?'#ff4d5e':(mult>=1.5?'#ffb347':'#6fe08f'))+'">'+mult.toFixed(1)+'×</b> 5日均(均'+Math.round(avg5)+'亿)'+(mult>=3?' · 历史级护盘':(mult>=1.5?' · 放量护盘中':' · 常规量级')); }
-    /* 大小盘结构:大盘系vs中小盘系 */
+    /* 护盘方向:大盘系vs中小盘系 */
     var BIG={'510310':1,'510300':1,'563360':1,'510050':1,'510210':1,'159338':1,'159633':1,'159919':1,'512050':1};
     var big=0,small=0,bigN=0,smallN=0,ratio=1;
     for(var i=0;i<res.length;i++){ if(!res[i]) continue; var cd=NAT_ETFS[i][0]; var v=res[i].total/1e8;
@@ -1520,8 +1937,8 @@ function natLoad(force){
     if(okN<15){ rd.push('<span style="color:#8a93a3">⚠ 接口数据不足('+okN+'/20只)——解读暂缓，避免误导。稍后自动刷新。</span>');
       document.getElementById('natRead').innerHTML=rd.join('<br>');
     } else {
-    rd.push('<b style="color:'+(mult>=3?'#ff4d5e':(mult>=1.5?'#ffb347':'#6fe08f'))+'">'+(mult>=3?'历史级放量':(mult>=1.5?'放量中':'✓ 常规量级·无护盘迹象'))+'</b>');
-    if(mult>=1.5){ rd.push('今日'+tot+'亿 = 5日均的'+mult.toFixed(1)+'倍，宽基ETF放量常见于指数关键点位防守阶段。'); }
+    rd.push('<b style="color:'+(mult>=3?'#ff4d5e':(mult>=1.5?'#ffb347':'#6fe08f'))+'">'+(mult>=3?'历史级放量':(mult>=1.5?'⚠ 放量护盘中':'✓ 常规量级·无护盘迹象'))+'</b>');
+    if(mult>=1.5){ rd.push('今日'+tot+'亿 = 5日均的'+mult.toFixed(1)+'倍，国家队在场。宽基ETF放量常见于指数关键点位防守阶段。'); }
     if(pct>=90){ rd.push('· 历史分位'+pct+'%——样本内罕见的放量日。'); }
     if(ratio>=2){ rd.push('· <b style="color:#ffab5e">方向倾斜大盘('+ratio.toFixed(2)+':1)</b>——宽基与中小盘走势可能分化，请结合个股自身信号。'); }
     else if(ratio>=1){ rd.push('· 大小盘均衡护盘——指数与个股承接都在，可正常按盘面信号操作。'); }
@@ -1543,6 +1960,7 @@ function natTimerCtl(){ if(page===9){ if(!_natTimer) _natTimer=setInterval(funct
 try{ var _oldSwPage=swPage; }catch(e){}
 setInterval(natTimerCtl,2000);
 /* 嵌入数据标记: __NAT_OK__ */
+setInterval(natTimerCtl,2000);
 </script>
 </body>
 </html>

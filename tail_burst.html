@@ -42,7 +42,8 @@
 <div id="realPanel" style="display:none">
   <div class="sub" style="color:#f0883e">粘贴池子JSON(数组: ["603381","605339"] 或 [{code,name},...]) → 盘中14:30后跑/收盘后跑均可</div>
   <textarea id="poolInput" rows="4" placeholder='["603381","605339","002088"] 或粘贴dashboard orders格式'></textarea>
-  <div class="bar"><button class="run" onclick="runPool()">▶ 扫描</button> <span class="dim">限速0.35s/只 · 50只约18秒</span></div>
+  <div class="bar"><button class="run" onclick="runPool()">▶ 扫描</button> <button onclick="autoPool()">🔄 自动拉当日涨停池</button> <label style="font-size:11px;color:#f0883e;cursor:pointer"><input type="checkbox" id="autoFollow" onchange="toggleAutoFollow()"> 自动跟随(5分钟·池子有变自动重扫)</label> <span class="dim" id="poolStat"></span></div>
+  <div class="bar"><span class="dim">限速0.35s/只 · 50只约18秒</span></div>
 </div>
 
 <div class="legend">
@@ -119,6 +120,13 @@ function render(rows){
   for(var k in cnt){ if(k!=='平静') s.push('<span class="'+TAG_CLS[k]+'">'+k+'×'+cnt[k]+'</span>'); }
   s.push('<span class="dim">平静×'+(cnt['平静']||0)+'</span>·共'+rows.length+'只');
   $('stat').innerHTML=s.join(' ');
+  /* V0.2: 扫描结果落localStorage→主雷达"明日观察卡"聚合 */
+  try{
+    var hits=[];
+    for(var i2=0;i2<rows.length;i2++){ var r2=rows[i2]; if(r2.tag&&r2.tag!=='平静'&&r2.tag!=='ERR') hits.push({tag:r2.tag,code:r2.code,name:r2.name,detail:(r2.detail||'').slice(0,40)}); }
+    var now=new Date();
+    localStorage.setItem('mfx_tailburst',JSON.stringify({date:now.getFullYear()+'-'+('0'+(now.getMonth()+1)).slice(-2)+'-'+('0'+now.getDate()).slice(-2),ts:('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2),total:rows.length,hits:hits}));
+  }catch(e){}
 }
 
 function runBuiltin(){render(BUILTIN);log('✅ 内置回测(11.6)渲染完成·32只·与主脑手工分析3/3一致')}
@@ -135,7 +143,11 @@ function xGet(url,cb,fail){
 }
 function full(code){return (code.charAt(0)==='6'||code.charAt(0)==='9')?'sh'+code:((code.charAt(0)==='4'||code.charAt(0)==='8')?'bj'+code:'sz'+code)}
 
-function detect(rows,code,name,board){
+function limitOf(code,yest){
+  var r=(code.indexOf('30')===0||code.indexOf('68')===0)?1.2:(code.charAt(0)==='8'||code.charAt(0)==='4')?1.3:1.1;
+  return Math.round(yest*r*100)/100;
+}
+function detect(rows,code,name,board,yest){
   var prev=0,mins=[];
   for(var i=0;i<rows.length;i++){
     var p=rows[i].split(' ');
@@ -145,6 +157,8 @@ function detect(rows,code,name,board){
   var sum=0;for(var j=0;j<mins.length;j++)sum+=mins[j][2];
   var avg=sum/mins.length;
   var close=mins[mins.length-1][1];
+  var limPx=yest?limitOf(code,yest):null;
+  var sealed=limPx?(close>=limPx-0.005):(close>=dayMax*0.999);
   var tail=[],dayMax=mins[0][1],dayMin=mins[0][1];
   for(var k=0;k<mins.length;k++){
     if(mins[k][0]>='1430')tail.push(mins[k]);
@@ -153,12 +167,12 @@ function detect(rows,code,name,board){
   }
   var openPx=mins[0][1];
   var deepwater=(dayMin-openPx)/openPx<-0.05;
-  var tailMax=0;for(var m=0;m<tail.length;m++){var mm=tail[m][2]/avg;if(mm>tailMax)tailMax=mm;}
-  var bursts=[];for(var n=0;n<tail.length;n++){if(tail[n][2]>avg*8)bursts.push(tail[n]);}
+  var tailMax=0;for(var m=0;m<tail.length;m++){var mm=tail[m][2]/avg;if(tail[m][0]==='1500'&&!sealed)continue;if(mm>tailMax)tailMax=mm;}
+  var bursts=[];for(var n=0;n<tail.length;n++){if(tail[n][2]>avg*8){if(tail[n][0]==='1500'&&!sealed)continue;bursts.push(tail[n]);}}
   function r1(x){return Math.round(x*10)/10}
   if(bursts.length){
-    var lb=bursts[bursts.length-1],sealed=close>=dayMax*0.999;
-    if(sealed&&dayMax===close){
+    var lb=bursts[bursts.length-1];
+    if(sealed&&limPx&&dayMax<=limPx+0.005){
       var firstZt=null;for(var q=0;q<mins.length;q++){if(mins[q][1]>=close*0.999){firstZt=mins[q][0];break;}}
       if(deepwater)return {tag:'地天修复',name:name,code:code,board:board,tail:'x'+r1(tailMax),detail:'深水'+r1((dayMin-openPx)/openPx*100)+'%→最后爆量x'+r1(lb[2]/avg)+'@'+lb[1]+'→回封'+close};
       if(firstZt&&firstZt>='1450')return {tag:'尾盘偷袭板',name:name,code:code,board:board,tail:'x'+r1(tailMax),detail:firstZt+'首次封死·x'+r1(lb[2]/avg)+'·千金定律观察'};
@@ -194,10 +208,15 @@ function runPool(){
   function next(){
     if(idx>=arr.length){render(out);log('✅ 扫描完成·'+arr.length+'只');return}
     var s=arr[idx];
-    xGet('https://ifzq.gtimg.cn/appstock/app/minute/query?code='+full(s.code),function(d){
+    var fc=full(s.code);
+    xGet('https://ifzq.gtimg.cn/appstock/app/minute/query?code='+fc,function(d){
       try{
-        var node=d.data[full(s.code)].data.data;
-        out.push(detect(node,s.code,s.name,s.board));
+        var node=d.data[fc];
+        var rows=node.data.data;
+        var q=node.qt&&node.qt[fc];
+        var nm=(q&&q[1])||s.name||s.code;      /* ①名称: minute自带qt字段 */
+        var yest=(q&&+q[4])||null;              /* ②昨收: qt[4]·连fqkline都省了 */
+        out.push(detect(rows,s.code,nm,s.board,yest));
       }catch(e){out.push({tag:'ERR',name:s.name,code:s.code,detail:'结构:'+e.message})}
       idx++;setTimeout(next,350);
     },function(err){
@@ -206,6 +225,78 @@ function runPool(){
     });
   }
   next();
+}
+
+/* ═══ V0.2 自动动态池(东财涨停池JSONP·主雷达同款通道·file://必通) ═══ */
+var EXD=['https://push2ex.eastmoney.com','https://push2delay.eastmoney.com'];
+function _jsonp(base,path){
+  return new Promise(function(res,rej){
+    var cb='cb'+Date.now()+Math.floor(Math.random()*999);
+    var s=document.createElement('script');
+    var t=setTimeout(function(){ if(window[cb]){ delete window[cb]; if(s.parentNode)s.parentNode.removeChild(s); rej(); } },6000);
+    window[cb]=function(d){ clearTimeout(t); delete window[cb]; if(s.parentNode)s.parentNode.removeChild(s); res(d); };
+    s.src=base+path+'&cb='+cb+'&_='+Date.now();
+    s.onerror=function(){ clearTimeout(t); if(window[cb])delete window[cb]; if(s.parentNode)s.parentNode.removeChild(s); rej(); };
+    document.head.appendChild(s);
+  });
+}
+function _fetchGet(base,path){
+  return fetch(base+path+'&_='+Date.now(),{mode:'cors'}).then(function(r){ return r.json(); }).then(function(d){
+    if(!d || !d.data) throw new Error('empty');
+    return d;
+  });
+}
+function _firstOK(ps){
+  return new Promise(function(res,rej){
+    var n=0,done=false;
+    ps.forEach(function(p){ p.then(function(v){ if(!done){ done=true; res(v); } },function(){ n++; if(n===ps.length&&!done) rej(new Error('all fail')); }); });
+  });
+}
+function _tryEx(path){
+  var ps=EXD.map(function(b){ return _fetchGet(b,path).catch(function(){ return _jsonp(b,path); }); });
+  return _firstOK(ps);
+}
+function _tstr(){ var d=new Date(); return d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+(d.getDate())).slice(-2); }
+var _autoTimer=null, _lastPoolKey='';
+function autoPool(cb){
+  var date=_tstr();
+  var path='/getTopicZTPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=320&sort=fbt%3Aasc&date='+date;
+  $('poolStat').textContent='拉取当日涨停池…';
+  _tryEx(path).then(function(d){
+    var pool=null; try{ pool=d.data.pool; }catch(e){}
+    if(!pool||!pool.length){ /* 当日无池(休市/盘前)→最近交易日 */
+      var dd=new Date(); dd.setDate(dd.getDate()-1);
+      var yd=dd.getFullYear()+('0'+(dd.getMonth()+1)).slice(-2)+('0'+dd.getDate()).slice(-2);
+      path='/getTopicZTPool?ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wz.ztzt&Pageindex=0&pagesize=320&sort=fbt%3Aasc&date='+yd;
+      return _tryEx(path).then(function(d2){ var p2=null; try{ p2=d2.data.pool; }catch(e){} return {pool:p2||[], back:true}; });
+    }
+    return {pool:pool, back:false};
+  }).then(function(r){
+    var arr=[];
+    for(var i=0;i<r.pool.length;i++){
+      var o=r.pool[i];
+      var lb=o.lbc?o.lbc+'板':'';
+      var board=lb?(lb+(o.hybk?'·'+o.hybk:'')):(o.hybk||'首板');
+      arr.push({code:String(o.c),name:o.n,board:board});
+    }
+    if(!arr.length){ $('poolStat').textContent='当日池为空(休市/极端日)'; log('⚠️ 涨停池为空'); if(cb)cb(false); return; }
+    $('poolInput').value=JSON.stringify(arr.map(function(x){return {code:x.code,name:x.name,board:x.board};}));
+    var now=new Date(),hm=now.getHours()*100+now.getMinutes();
+    var tag=(r.back?'(休市·最近交易日池)':'(当日动态池)')+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
+    $('poolStat').textContent='池子'+arr.length+'只 '+tag;
+    var key=arr.map(function(x){return x.code;}).join(',');
+    var changed=key!==_lastPoolKey;
+    _lastPoolKey=key;
+    if(!r.back&&hm>=1430&&changed){ log('🔄 14:30后池子有变·自动重扫·'+arr.length+'只'); runPool(); }
+    else if(!r.back&&hm>=1430&&!changed){ $('poolStat').textContent+=' · 无变化未重扫'; }
+    else if(hm<1430&&!r.back){ $('poolStat').textContent+=' · 14:30后自动扫描'; }
+    if(cb)cb(changed);
+  }).catch(function(){ $('poolStat').textContent='拉取失败(网络/接口)'; log('⚠️ 涨停池拉取失败·可手动粘贴'); if(cb)cb(false); });
+}
+function toggleAutoFollow(){
+  if($('autoFollow').checked){
+    if(!_autoTimer){ autoPool(); _autoTimer=setInterval(function(){ if($('realPanel').style.display==='none')return; autoPool(); },300000); log('✅ 自动跟随开启·每5分钟拉当日涨停池·池变自动重扫(14:30后)'); }
+  } else { if(_autoTimer){ clearInterval(_autoTimer); _autoTimer=null; log('⏸ 自动跟随关闭'); } }
 }
 </script>
 </body>
